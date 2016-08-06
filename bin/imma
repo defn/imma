@@ -10,8 +10,6 @@ function main {
 }
 
 if [[ -z "${CONTEXT_REGION:-}" ]]; then
-  export SUB_MIDDLEWARE="${SUB_MIDDLEWARE:-} imma"
-  export SUB_RMIDDLEWARE="imma ${SUB_MIDDLEWARE:-}"
   source sub-chain aws us-west-1 "$BASH_SOURCE" "$@"
 else
   source sub-chain "$BASH_SOURCE" "$@"
