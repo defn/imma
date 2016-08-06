@@ -1,5 +1,6 @@
 {
   "require": [
+    "normalize",
     "awesome",
     "env-imma-global",
     "env-imma-admin",

@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+source normalize
+
 export CONTEXT_ORG="${0##*/}"
 
 function main {
   local shome="${_imma_home:-"$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
   source "$shome/script/profile"
 
-  exec aws exec "$@"
+  exec "$@"
 }
 
 if [[ -z "${CONTEXT_REGION:-}" ]]; then
