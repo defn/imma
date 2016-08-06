@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-export CONTEXT_ORG="${0##*/}"
+export CONTEXT_ENV="${0##*-}"
 
 function main {
   local shome="${_imma_home:-"$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
   source "$shome/script/profile"
 
-  exec aws exec "$@"
+  exec aws us-west-1 exec "$@"
 }
 
-source sub-chain "$BASH_SOURCE" "$@"
+source sub-middleware "$BASH_SOURCE" "$@"
