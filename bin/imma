@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export CONTEXT_ORG="${0##*/}"
+source aws-us-west-1 ''
 
 function main {
   local shome="${_imma_home:-"$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
@@ -10,8 +11,4 @@ function main {
   exec "$@"
 }
 
-if [[ -z "${CONTEXT_REGION:-}" ]]; then
-  source sub-chain aws us-west-1 "$BASH_SOURCE" "$@"
-else
-  source sub-chain "$BASH_SOURCE" "$@"
-fi
+source sub-chain "$BASH_SOURCE" "$@"
