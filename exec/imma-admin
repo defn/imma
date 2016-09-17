@@ -3,7 +3,7 @@
 export CONTEXT_ENV="${0##*-}"
 
 function main {
-  local shome="${_imma_home:-"$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
   source normalize
 

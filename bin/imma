@@ -4,7 +4,7 @@ export CONTEXT_ORG="${0##*/}"
 source aws-us-west-1 ''
 
 function main {
-  local shome="${_imma_home:-"$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
   source normalize
 
