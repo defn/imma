@@ -1,20 +1,21 @@
-runner := $(shell basename $(shell dirname $(PWD)))
-
 fmt:
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
+bootstrap:
+	terraform get
+	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .
+
 remote:
-	$(runner) terraform remote config -backend=s3 -backend-config="bucket=$(shell $(runner) terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
+	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
 
 plan:
-	$(runner) terraform get
-	$(runner) terraform plan
+	terraform plan
 
 apply:
-	$(runner) terraform apply
+	terraform apply
 
 output:
-	@$(runner) terraform output -json | jq .
+	@terraform output -json | jq .
 
 links:
 	ln -nfs ../common/Makefile .
