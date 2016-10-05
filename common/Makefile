@@ -13,6 +13,9 @@ plan:
 apply:
 	$(runner) terraform apply
 
+output:
+	@$(runner) terraform output
+
 links:
 	ln -nfs ../common/Makefile .
 	ln -nfs ../common/global.tf .
