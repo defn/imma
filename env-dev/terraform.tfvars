@@ -1,1 +1,1 @@
-s3_remote_state = "imma-io-remote-state"
+global_remote_state = "${path.module}/../global/.terraform/terraform.tfstate"
