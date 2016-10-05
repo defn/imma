@@ -8,8 +8,6 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  export TF_VAR_aws_account_id="${TF_VAR_aws_account_id:-"$(cat "$shome/.aws/account_id")"}"
-
   exec "$@"
 }
 
