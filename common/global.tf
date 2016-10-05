@@ -2,7 +2,7 @@ data "terraform_remote_state" "global" {
   backend = "local"
 
   config {
-    path = "${path.module}/../global/.terraform/terraform.tfstate"
+    path = "${var.global_remote_state}"
   }
 }
 
