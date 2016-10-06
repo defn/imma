@@ -20,3 +20,9 @@ output:
 links:
 	ln -nfs ../common/Makefile .
 	ln -nfs ../common/global.tf .
+
+key-pair: etc/key-pair.pub
+
+etc/key-pair.pub:
+	mkdir -p etc
+	ssh-keygen -P "" -C "$(shell basename $(PWD))" -f etc/key-pair
