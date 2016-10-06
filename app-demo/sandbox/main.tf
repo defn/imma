@@ -9,7 +9,7 @@ variable db_nets {
 module "app" {
   source              = "../../fogg/app"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.env_remote_state}"
+  env_remote_state    = "${var.sandbox_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
 }
@@ -17,7 +17,7 @@ module "app" {
 module "www" {
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.env_remote_state}"
+  env_remote_state    = "${var.sandbox_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "www"
@@ -29,7 +29,7 @@ module "www" {
 module "db" {
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.env_remote_state}"
+  env_remote_state    = "${var.sandbox_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "db"

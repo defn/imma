@@ -1,4 +1,4 @@
-env_remote_state = "../../env-sandbox/.terraform/terraform.tfstate"
+sandbox_remote_state = "../../env-sandbox/.terraform/terraform.tfstate"
 
 global_remote_state = "../../global/.terraform/terraform.tfstate"
 

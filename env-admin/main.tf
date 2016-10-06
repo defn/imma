@@ -1,7 +1,3 @@
-variable "dev_remote_state" {}
-
-variable "sandbox_remote_state" {}
-
 module "env" {
   source              = "../fogg/env"
   global_remote_state = "${var.global_remote_state}"
