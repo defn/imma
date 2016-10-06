@@ -8,6 +8,9 @@ bootstrap:
 remote:
 	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
 
+app-remote:
+	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
+
 plan:
 	terraform plan
 
