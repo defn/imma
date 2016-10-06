@@ -14,13 +14,17 @@ bootstrap:
 	terraform get
 	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .
 
-remote:
+global-remote env-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
 
 app-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
 
-links:
+global-links:
+	ln -nfs ../common/Makefile .
+	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json $$(echo $$1 | cut -d/ -f3).tf.json'
+
+env-links:
 	ln -nfs ../common/Makefile .
 	ln -nfs ../common/global.tf .
 	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json $$(echo $$1 | cut -d/ -f3).tf.json'
