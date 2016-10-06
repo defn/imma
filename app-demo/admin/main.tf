@@ -25,7 +25,7 @@ module "www" {
   service_name        = "www"
   service_nets        = ["${var.www_nets}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network = "1"
+  public_network      = "1"
 }
 
 module "db" {
