@@ -1,5 +1,3 @@
-variable admin_remote_state {}
-
 variable www_nets {
   default = []
 }
