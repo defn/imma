@@ -1,12 +1,40 @@
 variable admin_remote_state {}
 
+variable www_nets {
+  default = []
+}
+
+variable db_nets {
+  default = []
+}
+
 module "app" {
   source              = "../../fogg/app"
   global_remote_state = "${var.global_remote_state}"
   env_remote_state    = "${var.env_remote_state}"
-  app_name            = "${var.app_name}"
   az_count            = "${var.az_count}"
   az_names            = ["${var.az_names}"]
-  app_bits            = "${var.app_bits}"
-  app_nets            = ["${var.app_nets}"]
+  app_name            = "${var.app_name}"
+}
+
+module "www" {
+  source              = "../../fogg/service"
+  global_remote_state = "${var.global_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
+  az_count            = "${var.az_count}"
+  az_names            = ["${var.az_names}"]
+  app_name            = "${var.app_name}"
+  service_name        = "www"
+  service_nets        = ["${var.www_nets}"]
+}
+
+module "db" {
+  source              = "../../fogg/service"
+  global_remote_state = "${var.global_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
+  az_count            = "${var.az_count}"
+  az_names            = ["${var.az_names}"]
+  app_name            = "${var.app_name}"
+  service_name        = "db"
+  service_nets        = ["${var.db_nets}"]
 }
