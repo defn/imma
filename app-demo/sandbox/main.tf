@@ -1,9 +1,13 @@
-variable www_nets {
-  default = []
-}
+data "consul_keys" "app" {
+  key {
+    name = "www_nets"
+    path = "app/${var.app_name}/www/nets"
+  }
 
-variable db_nets {
-  default = []
+  key {
+    name = "db_nets"
+    path = "app/${var.app_name}/db/nets"
+  }
 }
 
 module "app" {
@@ -21,7 +25,7 @@ module "www" {
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "www"
-  service_nets        = ["${var.www_nets}"]
+  service_nets        = ["${split(" ",data.consul_keys.app.var.www_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
   public_network      = "1"
 }
@@ -33,6 +37,6 @@ module "db" {
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "db"
-  service_nets        = ["${var.db_nets}"]
+  service_nets        = ["${split(" ",data.consul_keys.app.var.db_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
 }

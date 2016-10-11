@@ -10,29 +10,47 @@ apply:
 output:
 	@terraform output -json | jq .
 
-bootstrap:
+bootstrap remote links:
+	$(MAKE) $(shell basename $(PWD) | cut -d- -f1)-$@
+
+global-bootstrap env-bootstrap:
 	terraform get
-	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .
+	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .terraform/
 
 global-remote env-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
 
-app-remote:
-	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
-
 global-links:
 	ln -nfs ../common/Makefile .
-	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json $$(echo $$1 | cut -d/ -f3).tf.json'
+	ln -nfs ../fogg/export.json _fogg.tf.json
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json _module-$$(echo $$1 | cut -d/ -f3).tf.json'
 
 env-links:
 	ln -nfs ../common/Makefile .
-	ln -nfs ../common/global.tf .
-	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json $$(echo $$1 | cut -d/ -f3).tf.json'
+	ln -nfs ../common/global.tf _global.tf
+	ln -nfs ../fogg/export.json _fogg.tf.json
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json _module-$$(echo $$1 | cut -d/ -f3).tf.json'
+
+%-bootstrap:
+	$(MAKE) app-bootstrap
+
+app-bootstrap:
+	aws s3 cp s3://imma-io-remote-state/$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate .terraform/
+
+%-remote:
+	$(MAKE) app-remote
+
+app-remote:
+	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
+
+%-links:
+	$(MAKE) app-links
 
 app-links:
 	ln -nfs ../../common/Makefile .
-	ln -nfs ../../common/$(shell basename $(PWD)).tf .
-	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json $$(echo $$1 | cut -d/ -f4).tf.json'
+	ln -nfs ../../common/$(shell basename $(PWD)).tf _env.tf
+	ln -nfs ../../fogg/export.json _fogg.tf.json
+	hcltool main.tf  | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json _module-$$(echo $$1 | cut -d/ -f4).tf.json'
 
 key-pair: etc/key-pair.pub
 
