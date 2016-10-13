@@ -5,3 +5,5 @@ global_remote_state = "../../global/.terraform/terraform.tfstate"
 az_count = "1"
 
 app_name = "demo"
+
+instance_type = ["t2.nano", "t2.nano"]

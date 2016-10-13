@@ -30,6 +30,7 @@ module "www" {
   service_nets        = ["${split(" ",data.consul_keys.app.var.www_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
   public_network      = "1"
+  instance_type       = ["${var.instance_type}"]
 }
 
 module "db" {
