@@ -1,13 +1,13 @@
 data "consul_keys" "app" {
   key {
-    name = "www_nets"
-    path = "app/${var.app_name}/www/nets"
+    name    = "www_nets"
+    path    = "app/${var.app_name}/www/nets"
     default = "102 103"
   }
 
   key {
-    name = "db_nets"
-    path = "app/${var.app_name}/db/nets"
+    name    = "db_nets"
+    path    = "app/${var.app_name}/db/nets"
     default = "104 105"
   }
 }

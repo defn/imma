@@ -1,4 +1,5 @@
 fmt:
+	$(MAKE) links
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
 plan:
@@ -50,8 +51,8 @@ app-links:
 	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
 	mv _fogg.tf.json.1 _fogg.tf.json
 
-key-pair: etc/key-pair.pub
+key-pair: etc/ssh-key-pair.pub
 
-etc/key-pair.pub:
+etc/ssh-key-pair.pub:
 	mkdir -p etc
-	ssh-keygen -P "" -C "$(shell basename $(PWD))" -f etc/key-pair
+	ssh-keygen -f etc/ssh-key-pair -C "$(basename $(dirname $PWD))/$(basename $PWD)" -P ''

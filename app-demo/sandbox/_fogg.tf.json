@@ -50,6 +50,9 @@
         "0"
       ]
     },
+    "public_key": {
+      "default": "etc/ssh-key-pair.pub"
+    },
     "public_network": {
       "default": "0"
     },
