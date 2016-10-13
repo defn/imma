@@ -22,14 +22,14 @@ global-remote env-remote:
 
 global-links:
 	ln -nfs ../common/Makefile .
-	ln -nfs ../fogg/export.json _fogg.tf.json
-	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json _module-$$(echo $$1 | cut -d/ -f3).tf.json'
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 env-links:
 	ln -nfs ../common/Makefile .
 	ln -nfs ../common/global.tf _global.tf
-	ln -nfs ../fogg/export.json _fogg.tf.json
-	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | runmany 'ln -nfs $$1/export.json _module-$$(echo $$1 | cut -d/ -f3).tf.json'
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 %-bootstrap:
 	$(MAKE) app-bootstrap

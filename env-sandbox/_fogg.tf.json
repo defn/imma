@@ -1,1 +1,87 @@
-../fogg/export.json
+{
+  "provider": {
+    "aws": {},
+    "consul": {
+      "datacenter": "${var.consul_dc}"
+    }
+  },
+  "variable": {
+    "consul_dc": {
+      "default": "dc1"
+    },
+    "az_count": {},
+    "env_cidr": {},
+    "env_domain_name": {
+      "default": ""
+    },
+    "env_name": {},
+    "env_zone": {
+      "default": ""
+    },
+    "global_remote_state": {},
+    "nat_bits": {
+      "default": "12"
+    },
+    "nat_nets": {
+      "default": [
+        0
+      ]
+    }
+  },
+  "output": {
+    "env_cidr": {
+      "value": "${module.env.env_cidr}"
+    },
+    "env_name": {
+      "value": "${module.env.env_name}"
+    },
+    "igw_id": {
+      "value": "${module.env.igw_id}"
+    },
+    "key_name": {
+      "value": "${module.env.key_name}"
+    },
+    "nat_gateways": {
+      "value": "${module.env.nat_gateways}"
+    },
+    "private_zone_id": {
+      "value": "${module.env.private_zone_id}"
+    },
+    "private_zone_name": {
+      "value": "${module.env.private_zone_name}"
+    },
+    "private_zone_servers": {
+      "value": "${module.env.private_zone_servers}"
+    },
+    "public_zone_id": {
+      "value": "${module.env.public_zone_id}"
+    },
+    "public_zone_name": {
+      "value": "${module.env.public_zone_name}"
+    },
+    "public_zone_servers": {
+      "value": "${module.env.public_zone_servers}"
+    },
+    "sg_env": {
+      "value": "${module.env.sg_env}"
+    },
+    "sg_env_lb": {
+      "value": "${module.env.sg_env_lb}"
+    },
+    "sg_env_lb_private": {
+      "value": "${module.env.sg_env_lb_private}"
+    },
+    "sg_env_lb_public": {
+      "value": "${module.env.sg_env_lb_public}"
+    },
+    "sg_env_private": {
+      "value": "${module.env.sg_env_private}"
+    },
+    "sg_env_public": {
+      "value": "${module.env.sg_env_public}"
+    },
+    "vpc_id": {
+      "value": "${module.env.vpc_id}"
+    }
+  }
+}
