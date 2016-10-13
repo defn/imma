@@ -82,11 +82,31 @@
         "",
         ""
       ]
-    }
+    },
+    "sandbox_remote_state": {}
   },
   "output": {
     "app_sg": {
       "value": "${module.app.app_sg}"
+    },
+    "s3_remote_state": {
+      "value": "${data.terraform_remote_state.global.s3_remote_state}"
+    }
+  },
+  "data": {
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      },
+      "sandbox": {
+        "backend": "local",
+        "config": {
+          "path": "${var.sandbox_remote_state}"
+        }
+      }
     }
   }
 }

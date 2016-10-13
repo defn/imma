@@ -27,8 +27,7 @@ global-links:
 
 env-links:
 	ln -nfs ../common/Makefile .
-	ln -nfs ../common/global.tf _global.tf
-	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
 	mv _fogg.tf.json.1 _fogg.tf.json
 
 %-bootstrap:
@@ -48,8 +47,7 @@ app-remote:
 
 app-links:
 	ln -nfs ../../common/Makefile .
-	ln -nfs ../../common/$(shell basename $(PWD)).tf _env.tf
-	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	hcltool main.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
 	mv _fogg.tf.json.1 _fogg.tf.json
 
 key-pair: etc/key-pair.pub

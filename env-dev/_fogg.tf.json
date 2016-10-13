@@ -82,6 +82,19 @@
     },
     "vpc_id": {
       "value": "${module.env.vpc_id}"
+    },
+    "s3_remote_state": {
+      "value": "${data.terraform_remote_state.global.s3_remote_state}"
+    }
+  },
+  "data": {
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      }
     }
   }
 }
