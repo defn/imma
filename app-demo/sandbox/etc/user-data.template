@@ -112,12 +112,5 @@ runcmd:
   - "usermod -aG docker ubuntu"
   - "systemctl disable apt-daily.service"
   - "systemctl disable apt-daily.timer"
-
-power_state:
-  delay: "+30"
-  mode: reboot
-  message: Rebooting for LXD configuration
-  timeout: 30
-  condition: True
-
---===============88888888888888888888888888==
+  - "sleep 30"
+  - "reboot"
