@@ -6,4 +6,4 @@ az_count = "1"
 
 app_name = "demo"
 
-instance_type = ["t2.nano", "t2.nano"]
+instance_type = ["t2.nano", "m3.medium"]
