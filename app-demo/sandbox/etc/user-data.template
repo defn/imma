@@ -19,6 +19,11 @@ manage_etc_hosts: true
 
 write_files:
  - owner: root:root
+   path: /etc/network/fan
+   permissions: '0644'
+   content: |
+      172.16.0.0/16 250.0.0.0/8 --enable --dhcp
+ - owner: root:root
    path: /etc/sysctl.d/99-lxd.conf
    permissions: '0644'
    content: |
@@ -107,5 +112,12 @@ runcmd:
   - "usermod -aG docker ubuntu"
   - "systemctl disable apt-daily.service"
   - "systemctl disable apt-daily.timer"
+
+power_state:
+  delay: "+30"
+  mode: reboot
+  message: Rebooting for LXD configuration
+  timeout: 30
+  condition: True
 
 --===============88888888888888888888888888==
