@@ -13,7 +13,7 @@ users:
    shell: /bin/bash
    sudo: "ALL=(ALL) NOPASSWD: ALL"
    ssh-authorized-keys:
-    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCu3ORMZS2B/ZhRCurhyV0LSeEN2A0NdDius2K/rHn0lBLjp36hSP1syw45+75b4LKQZGzRc3NCOUtXYWJKZdDZjupjtWS9OtBoqUiyY0TCPfhmhy03W2FvmnYxiNidU6ggxBXjocStvL4lj9LMkdsNVlam7Q05Hri27tkCGh2di/z7xl7SK7DfoL0oQ1dc03vFBrT4fxwA146+nSeUI9nAyGoxXfXM+nR5y4Jpa+40WKO8aMkWuxaGjdseOTDb/HcTKQn4kcJQF14VGcCcPYqDS8m6swXpoXhSRF4hI/MFAwEgBaE8ub1TrejdaqJj/zjNZkoRd6THjnAGHjUigW09 defn@spiral.local
+    - ${public_key}
 
 manage_etc_hosts: true
 
