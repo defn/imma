@@ -15,7 +15,6 @@ bootstrap remote links:
 	$(MAKE) $(shell basename $(PWD) | cut -d- -f1)-$@
 
 global-bootstrap env-bootstrap:
-	terraform get
 	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .terraform/
 
 global-remote env-remote:
