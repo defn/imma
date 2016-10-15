@@ -33,14 +33,3 @@ module "www" {
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }
-
-module "db" {
-  source              = "../../fogg/service"
-  global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.sandbox_remote_state}"
-  az_count            = "${var.az_count}"
-  app_name            = "${var.app_name}"
-  service_name        = "db"
-  service_nets        = ["${split(" ",data.consul_keys.app.var.db_nets)}"]
-  security_groups     = ["${module.app.app_sg}"]
-}
