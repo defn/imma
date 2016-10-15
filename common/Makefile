@@ -40,7 +40,7 @@ app-bootstrap:
 	$(MAKE) app-remote
 
 app-remote:
-	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
+	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate" -backend-config="region=us-west-1"
 
 %-links:
 	$(MAKE) app-links
