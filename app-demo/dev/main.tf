@@ -2,13 +2,13 @@ data "consul_keys" "app" {
   key {
     name    = "www_nets"
     path    = "app/${var.app_name}/www/nets"
-    default = "102 103"
+    default = "102 103 107"
   }
 
   key {
     name    = "db_nets"
     path    = "app/${var.app_name}/db/nets"
-    default = "104 105"
+    default = "104 105 106"
   }
 }
 
@@ -32,6 +32,7 @@ module "www" {
   public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
+  want_fs             = "1"
 }
 
 module "db" {
