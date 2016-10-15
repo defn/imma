@@ -22,7 +22,7 @@ write_files:
    path: /etc/network/fan
    permissions: '0644'
    content: |
-      172.16.0.0/16 250.0.0.0/8 --enable --dhcp
+      ${vpc_cidr}/16 250.0.0.0/8 --enable --dhcp
  - owner: root:root
    path: /etc/sysctl.d/99-lxd.conf
    permissions: '0644'
