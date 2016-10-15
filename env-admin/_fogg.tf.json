@@ -26,9 +26,7 @@
       "default": [
         0
       ]
-    },
-    "dev_remote_state": {},
-    "sandbox_remote_state": {}
+    }
   },
   "output": {
     "env_cidr": {
@@ -95,18 +93,6 @@
         "backend": "local",
         "config": {
           "path": "${var.global_remote_state}"
-        }
-      },
-      "dev": {
-        "backend": "local",
-        "config": {
-          "path": "${var.dev_remote_state}"
-        }
-      },
-      "sandbox": {
-        "backend": "local",
-        "config": {
-          "path": "${var.sandbox_remote_state}"
         }
       }
     }
