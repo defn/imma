@@ -1,9 +1,21 @@
 {
-  "provider": {
-    "aws": {
-      "alias": "us_east_1",
-      "region": "us-east-1"
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
     },
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      }
+    }
+  },
+  "provider": {
+    "aws": {},
     "consul": {
       "datacenter": "${var.consul_dc}"
     }
@@ -13,6 +25,14 @@
       "default": "dc1"
     },
     "az_count": {},
+    "common_bits": {
+      "default": "8"
+    },
+    "common_nets": {
+      "default": [
+        0
+      ]
+    },
     "env_cidr": {},
     "env_domain_name": {
       "default": ""
@@ -32,17 +52,11 @@
     }
   },
   "output": {
-    "env_cidr": {
-      "value": "${module.env.env_cidr}"
-    },
     "env_name": {
       "value": "${module.env.env_name}"
     },
     "igw_id": {
       "value": "${module.env.igw_id}"
-    },
-    "key_name": {
-      "value": "${module.env.key_name}"
     },
     "nat_gateways": {
       "value": "${module.env.nat_gateways}"
@@ -56,14 +70,8 @@
     "private_zone_servers": {
       "value": "${module.env.private_zone_servers}"
     },
-    "public_zone_id": {
-      "value": "${module.env.public_zone_id}"
-    },
-    "public_zone_name": {
-      "value": "${module.env.public_zone_name}"
-    },
-    "public_zone_servers": {
-      "value": "${module.env.public_zone_servers}"
+    "sg_efs": {
+      "value": "${module.env.sg_efs}"
     },
     "sg_env": {
       "value": "${module.env.sg_env}"
@@ -88,16 +96,6 @@
     },
     "s3_remote_state": {
       "value": "${data.terraform_remote_state.global.s3_remote_state}"
-    }
-  },
-  "data": {
-    "terraform_remote_state": {
-      "global": {
-        "backend": "local",
-        "config": {
-          "path": "${var.global_remote_state}"
-        }
-      }
     }
   }
 }
