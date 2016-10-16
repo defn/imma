@@ -1,0 +1,117 @@
+{
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
+    },
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      },
+      "env": {
+        "backend": "local",
+        "config": {
+          "path": "${var.env_remote_state}"
+        }
+      }
+    }
+  },
+  "provider": {
+    "aws": {},
+    "consul": {
+      "datacenter": "${var.consul_dc}"
+    }
+  },
+  "variable": {
+    "consul_dc": {
+      "default": "dc1"
+    },
+    "app_name": {},
+    "az_count": {},
+    "global_remote_state": {},
+    "asg_count": {
+      "default": 2
+    },
+    "asg_name": {
+      "default": [
+        "blue",
+        "green"
+      ]
+    },
+    "ignore_asg_changes": {
+      "default": [
+        ""
+      ]
+    },
+    "image_id": {
+      "default": [
+        "",
+        ""
+      ]
+    },
+    "instance_type": {
+      "default": [
+        "t2.small",
+        "t2.small"
+      ]
+    },
+    "max_size": {
+      "default": [
+        "5",
+        "5"
+      ]
+    },
+    "min_size": {
+      "default": [
+        "0",
+        "0"
+      ]
+    },
+    "public_key": {
+      "default": "etc/ssh-key-pair.pub"
+    },
+    "public_network": {
+      "default": "0"
+    },
+    "root_volume_size": {
+      "default": [
+        "20",
+        "20"
+      ]
+    },
+    "security_groups": {
+      "default": [
+        0
+      ]
+    },
+    "service_bits": {
+      "default": "12"
+    },
+    "service_nets": {
+      "default": [
+        0
+      ]
+    },
+    "termination_policies": {
+      "default": [
+        "OldestInstance"
+      ]
+    },
+    "user_data": {
+      "default": "etc/user-data.template"
+    },
+    "env_remote_state": {}
+  },
+  "output": {
+    "app_sg": {
+      "value": "${module.app.app_sg}"
+    },
+    "s3_remote_state": {
+      "value": "${data.terraform_remote_state.global.s3_remote_state}"
+    }
+  }
+}

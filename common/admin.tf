@@ -1,9 +1,9 @@
-variable admin_remote_state {}
+variable env_remote_state {}
 
-data "terraform_remote_state" "admin" {
+data "terraform_remote_state" "env" {
   backend = "local"
 
   config {
-    path = "${var.admin_remote_state}"
+    path = "${var.env_remote_state}"
   }
 }
