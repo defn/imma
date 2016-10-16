@@ -1,4 +1,25 @@
 {
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
+    },
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      },
+      "sandbox": {
+        "backend": "local",
+        "config": {
+          "path": "${var.sandbox_remote_state}"
+        }
+      }
+    }
+  },
   "provider": {
     "aws": {},
     "consul": {
@@ -91,22 +112,6 @@
     },
     "s3_remote_state": {
       "value": "${data.terraform_remote_state.global.s3_remote_state}"
-    }
-  },
-  "data": {
-    "terraform_remote_state": {
-      "global": {
-        "backend": "local",
-        "config": {
-          "path": "${var.global_remote_state}"
-        }
-      },
-      "sandbox": {
-        "backend": "local",
-        "config": {
-          "path": "${var.sandbox_remote_state}"
-        }
-      }
     }
   }
 }

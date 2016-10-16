@@ -18,7 +18,7 @@ global-bootstrap env-bootstrap:
 	aws s3 cp s3://imma-io-remote-state/$(shell basename $(PWD))/terraform.tfstate .terraform/
 
 global-remote env-remote:
-	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
+	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
 
 global-links:
 	ln -nfs ../common/Makefile .
@@ -40,7 +40,7 @@ app-bootstrap:
 	$(MAKE) app-remote
 
 app-remote:
-	terraform remote config -backend=s3 -backend-config="bucket=$(shell terraform output -json | jq -r .s3_remote_state.value)" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate" -backend-config="region=us-west-1"
+	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate" -backend-config="region=us-west-1"
 
 %-links:
 	$(MAKE) app-links

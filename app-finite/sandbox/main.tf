@@ -1,14 +1,8 @@
 data "consul_keys" "app" {
   key {
-    name    = "www_nets"
-    path    = "app/${var.app_name}/www/nets"
+    name    = "irssi_nets"
+    path    = "app/${var.app_name}/irssi/nets"
     default = "102 103"
-  }
-
-  key {
-    name    = "db_nets"
-    path    = "app/${var.app_name}/db/nets"
-    default = "104 105"
   }
 }
 
@@ -20,14 +14,14 @@ module "app" {
   app_name            = "${var.app_name}"
 }
 
-module "www" {
+module "irssi" {
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
   env_remote_state    = "${var.sandbox_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
-  service_name        = "www"
-  service_nets        = ["${split(" ",data.consul_keys.app.var.www_nets)}"]
+  service_name        = "irssi"
+  service_nets        = ["${split(" ",data.consul_keys.app.var.irssi_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
   public_network      = "1"
   instance_type       = ["${var.instance_type}"]
