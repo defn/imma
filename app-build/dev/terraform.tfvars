@@ -1,4 +1,4 @@
-dev_remote_state = "../../env-dev/.terraform/terraform.tfstate"
+env_remote_state = "../../env-dev/.terraform/terraform.tfstate"
 
 global_remote_state = "../../global/.terraform/terraform.tfstate"
 

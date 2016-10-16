@@ -4,6 +4,7 @@ data "consul_keys" "app" {
     path    = "app/${var.app_name}/packer/nets"
     default = "108 109 110"
   }
+
   key {
     name    = "blocks_nets"
     path    = "app/${var.app_name}/blocks/nets"
@@ -14,7 +15,7 @@ data "consul_keys" "app" {
 module "app" {
   source              = "../../fogg/app"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.dev_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
 }
@@ -22,7 +23,7 @@ module "app" {
 module "packer" {
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.dev_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "packer"
@@ -35,7 +36,7 @@ module "packer" {
 module "blocks" {
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.dev_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "blocks"
