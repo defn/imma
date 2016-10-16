@@ -1,4 +1,5 @@
 fmt:
+	$(MAKE) key-pair
 	$(MAKE) links
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
