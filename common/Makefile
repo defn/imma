@@ -47,3 +47,6 @@ key-pair: etc/ssh-key-pair.pub
 etc/ssh-key-pair.pub:
 	mkdir -p etc
 	ssh-keygen -f etc/ssh-key-pair -C "$(basename $(dirname $PWD))/$(basename $PWD)" -P ''
+
+instances:
+	 aws ec2 describe-instances | jq -r '[.Reservations[].Instances[]] | flatten | map(select(.State.Name == "running")) | map("\(.InstanceId) \(.State.Name) \((.Tags//[])[] | select(.Key == "aws:autoscaling:groupName") | .Value) \(.PrivateDnsName) \(.PublicDnsName)")[]' | sort -k2 | talign
