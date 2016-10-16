@@ -44,9 +44,6 @@
     }
   },
   "output": {
-    "env_cidr": {
-      "value": "${module.env.env_cidr}"
-    },
     "env_name": {
       "value": "${module.env.env_name}"
     },

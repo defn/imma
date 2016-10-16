@@ -12,10 +12,10 @@
           "path": "${var.global_remote_state}"
         }
       },
-      "sandbox": {
+      "dev": {
         "backend": "local",
         "config": {
-          "path": "${var.sandbox_remote_state}"
+          "path": "${var.dev_remote_state}"
         }
       }
     }
@@ -104,7 +104,7 @@
     "user_data": {
       "default": "etc/user-data.template"
     },
-    "sandbox_remote_state": {}
+    "dev_remote_state": {}
   },
   "output": {
     "app_sg": {
