@@ -2,13 +2,13 @@ data "consul_keys" "app" {
   key {
     name    = "openvpn_nets"
     path    = "app/${var.app_name}/openvpn/nets"
-    default = "99 100 101"
+    default = "99 100 101 1000"
   }
 
   key {
     name    = "bastion_nets"
     path    = "app/${var.app_name}/bastion/nets"
-    default = "102 103 104"
+    default = "102 103 104 1001"
   }
 }
 
