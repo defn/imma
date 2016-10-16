@@ -23,7 +23,6 @@ module "irssi" {
   service_name        = "irssi"
   service_nets        = ["${split(" ",data.consul_keys.app.var.irssi_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }

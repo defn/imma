@@ -41,7 +41,6 @@ module "aptly" {
   service_name        = "aptly"
   service_nets        = ["${split(" ",data.consul_keys.app.var.aptly_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }
@@ -55,7 +54,6 @@ module "nexus" {
   service_name        = "nexus"
   service_nets        = ["${split(" ",data.consul_keys.app.var.nexus_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }
@@ -69,7 +67,6 @@ module "dns" {
   service_name        = "dns"
   service_nets        = ["${split(" ",data.consul_keys.app.var.dns_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }
@@ -83,7 +80,6 @@ module "ntp" {
   service_name        = "ntp"
   service_nets        = ["${split(" ",data.consul_keys.app.var.ntp_nets)}"]
   security_groups     = ["${module.app.app_sg}"]
-  public_network      = "1"
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
 }
