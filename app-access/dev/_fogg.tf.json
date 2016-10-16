@@ -12,10 +12,10 @@
           "path": "${var.global_remote_state}"
         }
       },
-      "dev": {
+      "env": {
         "backend": "local",
         "config": {
-          "path": "${var.dev_remote_state}"
+          "path": "${var.env_remote_state}"
         }
       }
     }
@@ -104,7 +104,7 @@
     "user_data": {
       "default": "etc/user-data.template"
     },
-    "dev_remote_state": {}
+    "env_remote_state": {}
   },
   "output": {
     "app_sg": {
