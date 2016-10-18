@@ -22,6 +22,7 @@ module "packer" {
 module "blocks" {
   service_name        = "blocks"
   service_nets        = ["${data.terraform_remote_state.global.service_nets["blocks"]}"]
+  want_fs             = "1"
   source              = "../../fogg/service"
   global_remote_state = "${var.global_remote_state}"
   env_remote_state    = "${var.env_remote_state}"
@@ -30,5 +31,4 @@ module "blocks" {
   security_groups     = ["${module.app.app_sg}"]
   instance_type       = ["${var.instance_type}"]
   user_data           = "${var.user_data}"
-  want_fs             = "1"
 }
