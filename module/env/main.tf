@@ -12,6 +12,8 @@ data "aws_vpc" "current" {
 
 data "aws_availability_zones" "azs" {}
 
+variable "global_remote_state" {}
+
 variable "env_cidr" {}
 
 variable "nat_nets" {

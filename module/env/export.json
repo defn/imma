@@ -13,9 +13,6 @@
     "env_zone": {
       "default": ""
     },
-    "global_remote_state": {
-      "default": ".global.tfstate"
-    },
     "nat_bits": {
       "default": "12"
     }

@@ -1,5 +1,7 @@
 variable "env_remote_state" {}
 
+variable "global_remote_state" {}
+
 data "terraform_remote_state" "global" {
   backend = "local"
 
