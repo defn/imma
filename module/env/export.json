@@ -6,12 +6,6 @@
     "common_bits": {
       "default": "8"
     },
-    "common_nets": {
-      "default": [
-        0
-      ]
-    },
-    "env_cidr": {},
     "env_domain_name": {
       "default": ""
     },
@@ -19,14 +13,11 @@
     "env_zone": {
       "default": ""
     },
-    "global_remote_state": {},
+    "global_remote_state": {
+      "default": ".global.tfstate"
+    },
     "nat_bits": {
       "default": "12"
-    },
-    "nat_nets": {
-      "default": [
-        0
-      ]
     }
   },
   "output": {

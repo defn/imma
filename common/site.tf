@@ -54,23 +54,3 @@ variable env_cidr {
     "dev"     = "172.20.0.0/16"
   }
 }
-
-output env_cidr {
-  value = "${var.env_cidr}"
-}
-
-output sys_nets {
-  value = "${var.sys_nets}"
-}
-
-output service_nets {
-  value = "${var.service_nets}"
-}
-
-output public_network {
-  value = "${var.public_network}"
-}
-
-output want_fs {
-  value = "${want_fs}"
-}

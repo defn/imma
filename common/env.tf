@@ -1,3 +1,7 @@
+variable global_remote_state {
+  default = ".global.tfstate"
+}
+
 module "env" {
   source              = "../module/env"
   global_remote_state = "${var.global_remote_state}"

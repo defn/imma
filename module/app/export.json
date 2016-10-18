@@ -1,8 +1,9 @@
 {
+  "data": {},
+  "provider": {},
   "variable": {
     "app_name": {},
-    "az_count": {},
-    "global_remote_state": {}
+    "az_count": {}
   },
   "output": {
     "app_sg": {
