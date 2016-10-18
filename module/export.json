@@ -1,0 +1,21 @@
+{
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
+    }
+  },
+  "provider": {
+    "aws": {},
+    "consul": {
+      "datacenter": "${var.consul_dc}"
+    }
+  },
+  "variable": {
+    "consul_dc": {
+      "default": "dc1"
+    }
+  },
+  "output": {}
+}

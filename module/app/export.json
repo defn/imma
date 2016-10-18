@@ -1,0 +1,12 @@
+{
+  "variable": {
+    "app_name": {},
+    "az_count": {},
+    "global_remote_state": {}
+  },
+  "output": {
+    "app_sg": {
+      "value": "${module.app.app_sg}"
+    }
+  }
+}
