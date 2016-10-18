@@ -23,7 +23,8 @@ env-links:
 	ln -nfs ../common/Makefile ../common/env.tf .
 	ln -nfs ../global/.terraform/terraform.tfstate .global.tfstate
 	hcltool env.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
-	mv _fogg.tf.json.1 _fogg.tf.json
+	cat _fogg.tf.json.1 | jq --arg env_name $(shell echo $(PWD) | cut -d- -f2-) '.variable.env_name |= { default: $$env_name }' > _fogg.tf.json
+	rm -f _fogg.tf.json.1
 
 %-remote:
 	$(MAKE) app-remote
