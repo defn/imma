@@ -47,7 +47,7 @@ app-%-links:
 	$(MAKE) key-pair
 	ln -nfs ../../common/Makefile .
 	imma gen app $(shell cat ../services) > _fogg.tf.json.1
-	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
+	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
 	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json.3
 	cat _fogg.tf.json.3 | jq --arg app_name $(shell basename $(shell dirname $(PWD)) | cut -d- -f2-) '.variable.app_name |= { default: $$app_name }' > _fogg.tf.json.4
 	cat _fogg.tf.json.4 | jq --arg env_name $(shell basename $(PWD)) '.variable.env_remote_state |= { default: "../../env/\($$env_name)/.terraform/terraform.tfstate" }' > _fogg.tf.json.5
