@@ -1,12 +1,15 @@
 variable sys_nets {
   default = {
+    meh    = [0, 1, 6]
     common = [2, 3, 4, 5]
     nat    = [10, 11, 12, 13]
+    feh    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   }
 }
 
 variable service_nets {
   default = {
+    meh     = [96, 97, 98]
     openvpn = [99, 100, 101, 1000]
     bastion = [102, 103, 104, 1001]
     irssi   = [105, 106, 107, 1006]
