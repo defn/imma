@@ -25,7 +25,9 @@
       "default": "dc1"
     },
     "az_count": {},
-    "env_cidr": {},
+    "common_bits": {
+      "default": "8"
+    },
     "env_domain_name": {
       "default": ""
     },
@@ -36,11 +38,6 @@
     "global_remote_state": {},
     "nat_bits": {
       "default": "12"
-    },
-    "nat_nets": {
-      "default": [
-        0
-      ]
     }
   },
   "output": {
@@ -49,9 +46,6 @@
     },
     "igw_id": {
       "value": "${module.env.igw_id}"
-    },
-    "key_name": {
-      "value": "${module.env.key_name}"
     },
     "nat_gateways": {
       "value": "${module.env.nat_gateways}"
@@ -65,14 +59,8 @@
     "private_zone_servers": {
       "value": "${module.env.private_zone_servers}"
     },
-    "public_zone_id": {
-      "value": "${module.env.public_zone_id}"
-    },
-    "public_zone_name": {
-      "value": "${module.env.public_zone_name}"
-    },
-    "public_zone_servers": {
-      "value": "${module.env.public_zone_servers}"
+    "sg_efs": {
+      "value": "${module.env.sg_efs}"
     },
     "sg_env": {
       "value": "${module.env.sg_env}"
