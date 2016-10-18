@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function app_env {
+  hcltool "$shome/common/env.tf"
+}
+
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize
+
+  app_env "$@" | jq -s 'reduce .[] as $e ({}; . * $e)'
+}
+
+source sub "$BASH_SOURCE" "$@"

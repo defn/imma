@@ -20,10 +20,12 @@ global-links:
 	mv _fogg.tf.json.1 _fogg.tf.json
 
 env-links:
-	ln -nfs ../common/Makefile ../common/env.tf .
-	hcltool env.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
-	cat _fogg.tf.json.1 | jq --arg env_name $(shell echo $(PWD) | cut -d- -f2-) '.variable.env_name |= { default: $$env_name }' > _fogg.tf.json.2
-	cat _fogg.tf.json.2 | jq '.variable.global_remote_state |= { default: "../global/.terraform/terraform.tfstate" }' > _fogg.tf.json
+	ln -nfs ../common/Makefile .
+	imma gen env > _fogg.tf.json.1
+	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
+	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json.3
+	cat _fogg.tf.json.3 | jq --arg env_name $(shell echo $(PWD) | cut -d- -f2-) '.variable.env_name |= { default: $$env_name }' > _fogg.tf.json.4
+	cat _fogg.tf.json.4 | jq '.variable.global_remote_state |= { default: "../global/.terraform/terraform.tfstate" }' > _fogg.tf.json
 	rm -f _fogg.tf.json.*
 
 %-remote:
