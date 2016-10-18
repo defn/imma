@@ -1,4 +1,4 @@
 .terraform
 .aws
 ssh-*
-_fogg.tf.json
+.fogg.tf.json
