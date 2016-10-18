@@ -2,11 +2,8 @@ fmt:
 	$(MAKE) links
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
-plan:
-	terraform plan
-
-apply:
-	terraform apply
+plan apply refresh get:
+	terraform $@
 
 output:
 	@terraform output -json | jq .
