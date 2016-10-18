@@ -50,6 +50,7 @@ variable want_fs {
 variable env_cidr {
   default = {
     "sandbox" = "172.16.0.0/16"
+    "_docker" = "172.17.0.0/16"
     "admin"   = "172.19.0.0/16"
     "dev"     = "172.20.0.0/16"
   }
