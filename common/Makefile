@@ -1,5 +1,5 @@
 fmt:
-	$(MAKE) get links
+	$(MAKE) links get
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
 plan apply refresh get:
@@ -42,8 +42,9 @@ app-links:
 	ln -nfs ../../env-$(shell basename $(PWD))/.terraform/terraform.tfstate .env.tfstate
 	imma gen app $(shell cat .services) > _fogg.tf.json.1
 	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../module/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
-	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json
-	rm -f _fogg.tf.json.1 _fogg.tf.json.2
+	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json.3
+	cat _fogg.tf.json.3 | jq --arg app_name $(shell basename $(shell dirname $(PWD)) | cut -d- -f2-) '.variable.app_name |= { default: $$app_name }' > _fogg.tf.json
+	rm -f _fogg.tf.json.1 _fogg.tf.json.2 _fogg.tf.json.3
 
 key-pair: etc/ssh-key-pair.pub
 

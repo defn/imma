@@ -1,7 +1,5 @@
 az_count = "4"
 
-app_name = "access"
-
 instance_type = ["t2.nano", "t2.nano"]
 
 public_network = {
