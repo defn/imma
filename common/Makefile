@@ -1,5 +1,5 @@
 fmt:
-	$(MAKE) links
+	$(MAKE) get links
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
 plan apply refresh get:
