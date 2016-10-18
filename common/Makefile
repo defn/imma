@@ -1,5 +1,4 @@
 fmt:
-	$(MAKE) key-pair
 	$(MAKE) links
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
@@ -25,6 +24,7 @@ global-links:
 
 env-links:
 	ln -nfs ../common/Makefile ../common/env.tf .
+	ln -nfs ../global/.terraform/terraform.tfstate .global.tfstate
 	hcltool env.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
 	mv _fogg.tf.json.1 _fogg.tf.json
 
@@ -38,7 +38,10 @@ app-remote:
 	$(MAKE) app-links
 
 app-links:
+	$(MAKE) key-pair
 	ln -nfs ../../common/Makefile .
+	ln -nfs ../../global/.terraform/terraform.tfstate .global.tfstate
+	ln -nfs ../../env-$(shell basename $(PWD))/.terraform/terraform.tfstate .env.tfstate
 	imma gen app $(shell cat .services) > _fogg.tf.json.1
 	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
 	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json

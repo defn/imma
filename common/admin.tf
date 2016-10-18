@@ -1,4 +1,4 @@
-variable env_remote_state {}
+variable env_remote_state { default = ".env.tfstate" }
 
 data "terraform_remote_state" "env" {
   backend = "local"
