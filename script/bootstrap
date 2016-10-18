@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+function bootstrap {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+
+  block compile virtualenv
+
+  "$shome/script/update"
+}
+
+bootstrap
