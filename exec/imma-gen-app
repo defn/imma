@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+function app_services {
+  hcltool "$shome/common/site.tf"
+  hcltool "$shome/common/app.tf"
+  
+  for s in "$@"; 
+    do jq -n -r --argfile service <(hcltool "$shome/common/service.tf") '$service' | sed "s#SERVICE#${s}#g"
+  done
+}
+
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize
+
+  app_services "$@" | jq -s 'reduce .[] as $e ({}; . * $e)'
+}
+
+source sub "$BASH_SOURCE" "$@"
