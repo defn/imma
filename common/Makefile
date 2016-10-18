@@ -20,13 +20,13 @@ global-remote env-remote:
 
 global-links:
 	ln -nfs ../common/Makefile .
-	hcltool global.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > .fogg.tf.json.1
-	mv .fogg.tf.json.1 .fogg.tf.json
+	hcltool global.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 env-links:
 	ln -nfs ../common/Makefile ../common/env.tf .
-	hcltool env.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > .fogg.tf.json.1
-	mv .fogg.tf.json.1 .fogg.tf.json
+	hcltool env.tf | jq -r '.module | map(.source)[]' | sort -u | (cat ../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../common/$$1.tf' global $(shell cat .imma 2>/dev/null)) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 %-remote:
 	$(MAKE) app-remote
@@ -39,10 +39,10 @@ app-remote:
 
 app-links:
 	ln -nfs ../../common/Makefile .
-	imma gen app $(shell cat .services) > .fogg.tf.json.1
-	cat .fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > .fogg.tf.json.2
-	jq -n --argfile app .fogg.tf.json.1 --argfile fogg .fogg.tf.json.2 '$$app * $$fogg' > .fogg.tf.json
-	rm -f .fogg.tf.json.1 .fogg.tf.json.2
+	imma gen app $(shell cat .services) > _fogg.tf.json.1
+	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (cat ../../fogg/export.json; runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global $(shell basename $(PWD))) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
+	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json
+	rm -f _fogg.tf.json.1 _fogg.tf.json.2
 
 key-pair: etc/ssh-key-pair.pub
 
