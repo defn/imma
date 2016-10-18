@@ -26,3 +26,12 @@ service_nets = {
   dns     = [117, 118, 119, 1004]
   ntp     = [120, 121, 122, 1005]
 }
+
+public_network = {
+  openvpn = "1"
+  bastion = "1"
+}
+
+want_fs = {
+  blocks = "1"
+}

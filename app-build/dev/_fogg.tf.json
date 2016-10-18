@@ -1,32 +1,80 @@
 {
-  "data": {
-    "aws_region": {
-      "current": {
-        "current": true
-      }
+  "module": {
+    "app": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "source": "../../fogg/app"
     },
-    "terraform_remote_state": {
-      "global": {
-        "backend": "local",
-        "config": {
-          "path": "${var.global_remote_state}"
-        }
-      },
-      "env": {
-        "backend": "local",
-        "config": {
-          "path": "${var.env_remote_state}"
-        }
-      }
-    }
-  },
-  "provider": {
-    "aws": {},
-    "consul": {
-      "datacenter": "${var.consul_dc}"
+    "packer": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"packer\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "packer",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"packer\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"packer\"],\"0\")}"
+    },
+    "blocks": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"blocks\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "blocks",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"blocks\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"blocks\"],\"0\")}"
     }
   },
   "variable": {
+    "public_network": {
+      "default": {
+        "aptly": "0",
+        "bastion": "0",
+        "blocks": "0",
+        "dns": "0",
+        "irssi": "0",
+        "nexus": "0",
+        "ntp": "0",
+        "openvpn": "0",
+        "packer": "0"
+      }
+    },
+    "want_fs": {
+      "default": {
+        "aptly": "0",
+        "bastion": "0",
+        "blocks": "0",
+        "dns": "0",
+        "irssi": "0",
+        "nexus": "0",
+        "ntp": "0",
+        "openvpn": "0",
+        "packer": "0"
+      }
+    },
     "consul_dc": {
       "default": "dc1"
     },
@@ -74,9 +122,6 @@
     "public_key": {
       "default": "etc/ssh-key-pair.pub"
     },
-    "public_network": {
-      "default": "0"
-    },
     "root_volume_size": {
       "default": [
         "20",
@@ -105,6 +150,33 @@
       "default": "etc/user-data.template"
     },
     "env_remote_state": {}
+  },
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
+    },
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      },
+      "env": {
+        "backend": "local",
+        "config": {
+          "path": "${var.env_remote_state}"
+        }
+      }
+    }
+  },
+  "provider": {
+    "aws": {},
+    "consul": {
+      "datacenter": "${var.consul_dc}"
+    }
   },
   "output": {
     "app_sg": {

@@ -10,6 +10,14 @@ variable service_nets {
   default = {}
 }
 
+variable public_network {
+  default = {}
+}
+
+variable want_fs {
+  default = {}
+}
+
 module "global" {
   source          = "../fogg/global"
   aws_account_id  = "${var.aws_account_id}"
@@ -27,4 +35,12 @@ output sys_nets {
 
 output service_nets {
   value = "${var.service_nets}"
+}
+
+output public_network {
+  value = "${var.public_network}"
+}
+
+output want_fs {
+  value = "${want_fs}"
 }

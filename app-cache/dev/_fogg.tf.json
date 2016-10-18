@@ -1,32 +1,120 @@
 {
-  "data": {
-    "aws_region": {
-      "current": {
-        "current": true
-      }
+  "module": {
+    "app": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "source": "../../fogg/app"
     },
-    "terraform_remote_state": {
-      "global": {
-        "backend": "local",
-        "config": {
-          "path": "${var.global_remote_state}"
-        }
-      },
-      "env": {
-        "backend": "local",
-        "config": {
-          "path": "${var.env_remote_state}"
-        }
-      }
-    }
-  },
-  "provider": {
-    "aws": {},
-    "consul": {
-      "datacenter": "${var.consul_dc}"
+    "aptly": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"aptly\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "aptly",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"aptly\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"aptly\"],\"0\")}"
+    },
+    "nexus": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"nexus\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "nexus",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"nexus\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"nexus\"],\"0\")}"
+    },
+    "dns": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"dns\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "dns",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"dns\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"dns\"],\"0\")}"
+    },
+    "ntp": {
+      "app_name": "${var.app_name}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${var.env_remote_state}",
+      "global_remote_state": "${var.global_remote_state}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_network": "${coalesce(var.public_network[\"ntp\"],\"0\")}",
+      "security_groups": [
+        "${module.app.app_sg}"
+      ],
+      "service_name": "ntp",
+      "service_nets": [
+        "${data.terraform_remote_state.global.service_nets[\"ntp\"]}"
+      ],
+      "source": "../../fogg/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${coalesce(var.want_fs[\"ntp\"],\"0\")}"
     }
   },
   "variable": {
+    "public_network": {
+      "default": {
+        "aptly": "0",
+        "bastion": "0",
+        "blocks": "0",
+        "dns": "0",
+        "irssi": "0",
+        "nexus": "0",
+        "ntp": "0",
+        "openvpn": "0",
+        "packer": "0"
+      }
+    },
+    "want_fs": {
+      "default": {
+        "aptly": "0",
+        "bastion": "0",
+        "blocks": "0",
+        "dns": "0",
+        "irssi": "0",
+        "nexus": "0",
+        "ntp": "0",
+        "openvpn": "0",
+        "packer": "0"
+      }
+    },
     "consul_dc": {
       "default": "dc1"
     },
@@ -74,9 +162,6 @@
     "public_key": {
       "default": "etc/ssh-key-pair.pub"
     },
-    "public_network": {
-      "default": "0"
-    },
     "root_volume_size": {
       "default": [
         "20",
@@ -105,6 +190,33 @@
       "default": "etc/user-data.template"
     },
     "env_remote_state": {}
+  },
+  "data": {
+    "aws_region": {
+      "current": {
+        "current": true
+      }
+    },
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "${var.global_remote_state}"
+        }
+      },
+      "env": {
+        "backend": "local",
+        "config": {
+          "path": "${var.env_remote_state}"
+        }
+      }
+    }
+  },
+  "provider": {
+    "aws": {},
+    "consul": {
+      "datacenter": "${var.consul_dc}"
+    }
   },
   "output": {
     "app_sg": {
