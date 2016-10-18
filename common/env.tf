@@ -1,5 +1,5 @@
 module "env" {
-  source              = "../fogg/env"
+  source              = "../module/env"
   global_remote_state = "${var.global_remote_state}"
   env_name            = "${var.env_name}"
   env_cidr            = "${data.terraform_remote_state.global.env_cidr[var.env_name]}"
