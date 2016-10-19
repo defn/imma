@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function app_services {
-  hcltool "$shome/common/site.tf"
+  hcltool "$shome/env/global/site.tf"
   hcltool "$shome/common/app.tf"
   
   for s in "$@"; 
