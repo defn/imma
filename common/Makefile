@@ -27,26 +27,34 @@ app-%-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=$(shell hcltool ../../env/global/terraform.tfvars | jq -r '.aws_region')" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
 
 env-global-links:
-	hcltool global.tf > _fogg.tf.json.1
-	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
-	cat _fogg.tf.json.2 > _fogg.tf.json
-	rm -f _fogg.tf.json.*
+	hcltool global.tf > _fogg.tf.json.seed
+	cat _fogg.tf.json.seed | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.final
+	$(MAKE) cleanup
 
 env-%-links:
-	imma gen env > _fogg.tf.json.1
-	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
-	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json.3
-	cat _fogg.tf.json.3 | jq '.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" }' > _fogg.tf.json.4
-	cat _fogg.tf.json.4 | jq --arg env_name $(shell basename $(PWD)) '.variable.env_name |= { default: $$env_name }' > _fogg.tf.json.5
-	cat _fogg.tf.json.5 > _fogg.tf.json
-	rm -f _fogg.tf.json.*
+	imma gen env > _fogg.tf.json.seed
+	cat _fogg.tf.json.seed | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.modules
+	jq -n --argfile seed _fogg.tf.json.seed \
+		    --argfile modules _fogg.tf.json.modules \
+	      --arg env_name $(shell basename $(PWD)) \
+		     '$$seed * $$modules | \
+	      	.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } | \
+					.variable.env_name            |= { default: "\($$env_name)" }' > _fogg.tf.json.final
+	$(MAKE) cleanup
 
 app-%-links: etc/ssh-key-pair
-	imma gen app $(shell cat ../services) > _fogg.tf.json.1
-	cat _fogg.tf.json.1 | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.2
-	jq -n --argfile app _fogg.tf.json.1 --argfile fogg _fogg.tf.json.2 '$$app * $$fogg' > _fogg.tf.json.3
-	cat _fogg.tf.json.3 | jq '.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" }' > _fogg.tf.json.4
-	cat _fogg.tf.json.4 | jq --arg env_name $(shell basename $(PWD)) '.variable.env_remote_state |= { default: "../../env/\($$env_name)/.terraform/terraform.tfstate" }' > _fogg.tf.json.5
-	cat _fogg.tf.json.5 | jq --arg app_name $(shell basename $(shell dirname $(PWD)) | cut -d- -f2-) '.variable.app_name |= { default: $$app_name }' > _fogg.tf.json.6
-	cat _fogg.tf.json.6 > _fogg.tf.json
+	imma gen app $(shell cat ../services) > _fogg.tf.json.seed
+	cat _fogg.tf.json.seed | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.modules
+	jq -n --argfile seed _fogg.tf.json.seed \
+		    --argfile modules _fogg.tf.json.modules \
+	      --arg env_name $(shell basename $(PWD)) \
+		    --arg app_name $(shell basename $(shell dirname $(PWD)) | cut -d- -f2-) \
+		     '$$seed * $$modules | \
+	        .variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } | \
+	        .variable.env_remote_state    |= { default: "../../env/\($$env_name)/.terraform/terraform.tfstate" } | \
+          .variable.app_name            |= { default: "\($$app_name)" }' > _fogg.tf.json.final
+	$(MAKE) cleanup
+
+cleanup:
+	mv -f _fogg.tf.json.final _fogg.tf.json
 	rm -f _fogg.tf.json.*
