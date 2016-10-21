@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 
-function app_env {
-  hcltool "$shome/common/env.tf"
-}
-
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
   source normalize
 
-  app_env "$@" | jq -s 'reduce .[] as $e ({}; . * $e)'
+  local nm_env="$1"; shift
+  local tmp_fogg="$(mktemp -t XXXXXX)"
+
+  hcltool "$shome/common/env.tf" > "$tmp_fogg"
+
+  cat "$tmp_fogg" \
+    | jq -r '.module | map(.source) | unique[]' \
+    | (runmany 'cat $1/export.json'; runmany 'hcltool ../../common/$1.tf' global) \
+    | jq -s 'reduce .[] as $exp ({}; . * $exp)' > "$tmp_fogg.modules"
+
+	jq -n --argfile seed "$tmp_fogg" \
+		    --argfile modules "$tmp_fogg.modules" \
+	      --arg env_name "$nm_env" '$seed * $modules |
+	      	.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } |
+					.variable.env_name            |= { default: "\($env_name)" }'
 }
 
 source sub "$BASH_SOURCE" "$@"

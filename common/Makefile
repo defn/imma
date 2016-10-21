@@ -30,15 +30,7 @@ env-global-links:
 	imma gen global > _fogg.tf.json
 
 env-%-links:
-	imma gen env > _fogg.tf.json.seed
-	cat _fogg.tf.json.seed | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json'; runmany 'hcltool ../../common/$$1.tf' global) | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.modules
-	jq -n --argfile seed _fogg.tf.json.seed \
-		    --argfile modules _fogg.tf.json.modules \
-	      --arg env_name $(shell basename $(PWD)) \
-		     '$$seed * $$modules | \
-	      	.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } | \
-					.variable.env_name            |= { default: "\($$env_name)" }' > _fogg.tf.json.final
-	$(MAKE) cleanup
+	imma gen env "$(shell basename $(PWD))" > _fogg.tf.json
 
 app-%-links: etc/ssh-key-pair
 	imma gen app $(shell cat ../services) > _fogg.tf.json.seed
