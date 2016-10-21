@@ -6,6 +6,12 @@ data "terraform_remote_state" "env" {
   }
 }
 
+provider "aws" {
+  region = "${data.terraform_remote_state.env.aws_region}"
+}
+
+data "aws_region" "current" {}
+
 module "app" {
   source              = "../../module/app"
   global_remote_state = "${var.global_remote_state}"

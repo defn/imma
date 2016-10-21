@@ -202,7 +202,7 @@ resource "aws_key_pair" "service" {
   lifecycle {
     create_before_destroy = true
   }
- }
+}
 
 resource "aws_launch_configuration" "service" {
   name_prefix          = "${data.terraform_remote_state.env.env_name}-${var.app_name}-${var.service_name}-${element(var.asg_name,count.index)}-"

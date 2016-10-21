@@ -1,3 +1,17 @@
+variable "aws_region" {}
+
+output "aws_region" {
+  value = "${var.aws_region}"
+}
+
+provider "aws" {
+  region = "${var.aws_region}"
+}
+
+data "aws_region" "current" {
+  current = true
+}
+
 module "env" {
   source              = "../../module/env"
   global_remote_state = "${var.global_remote_state}"
