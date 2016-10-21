@@ -15,7 +15,7 @@ variable "asg_name" {
 }
 
 variable "instance_type" {
-  default = ["t2.small", "t2.small"]
+  default = ["t2.nano", "t2.nano"]
 }
 
 variable "image_id" {
