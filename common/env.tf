@@ -4,6 +4,10 @@ output "aws_region" {
   value = "${var.aws_region}"
 }
 
+output "az_count" {
+  value = "${var.az_count}"
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
