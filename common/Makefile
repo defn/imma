@@ -27,13 +27,13 @@ app-%-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=$(shell hcltool ../../env/global/terraform.tfvars | jq -r '.aws_region')" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
 
 links:
-	$(MAKE) $(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD) | cut -d- -f1)-$@ > _fogg.tf.json
+	$(MAKE) $(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD) | cut -d- -f1)-$@
 
 env-global-links:
-	imma gen global
+	imma gen global > _fogg.tf.json
 
 env-%-links:
-	imma gen env "$(shell basename $(PWD))"
+	imma gen env "$(shell basename $(PWD))" > _fogg.tf.json
 
 app-%-links: etc/ssh-key-pair
-	imma gen app "$(shell basename $(PWD))" "$(shell basename $(shell dirname $(PWD)) | cut -d- -f2-)" $(shell cat ../services)
+	imma gen app "$(shell basename $(PWD))" "$(shell basename $(shell dirname $(PWD)) | cut -d- -f2-)" $(shell cat ../services) > _fogg.tf.json
