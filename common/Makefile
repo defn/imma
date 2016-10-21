@@ -27,9 +27,7 @@ app-%-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=$(shell hcltool ../../env/global/terraform.tfvars | jq -r '.aws_region')" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
 
 env-global-links:
-	hcltool global.tf > _fogg.tf.json.seed
-	cat _fogg.tf.json.seed | jq -r '.module | map(.source)[]' | sort -u | (runmany 'cat $$1/export.json') | jq -s 'reduce .[] as $$exp ({}; . * $$exp)' > _fogg.tf.json.final
-	$(MAKE) cleanup
+	imma gen global > _fogg.tf.json
 
 env-%-links:
 	imma gen env > _fogg.tf.json.seed

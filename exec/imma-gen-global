@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize
+
+  local tmp_fogg="$(mktemp -d -t XXXXXX)"
+	hcltool global.tf \
+    | jq -r '.module | map(.source) | unique[]' \
+    | runmany 'cat $1/export.json' \
+    | jq -s 'reduce .[] as $exp ({}; . * $exp)'
+}
+
+source sub "$BASH_SOURCE" "$@"
