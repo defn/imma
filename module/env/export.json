@@ -16,6 +16,9 @@
     "nat_bits": {
       "default": "12"
     },
+    "nat_count": {
+      "default": "0"
+    },
     "want_fs": {
       "default": "1"
     }

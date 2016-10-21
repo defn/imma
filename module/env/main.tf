@@ -141,7 +141,7 @@ resource "aws_internet_gateway" "env" {
 
 resource "aws_eip" "nat" {
   vpc   = true
-  count = "${var.az_count}"
+  count = "${var.az_count*(signum(var.nat_count)-1)*-1+var.nat_count}"
 }
 
 resource "aws_subnet" "nat" {
@@ -174,7 +174,7 @@ resource "aws_route_table_association" "nat" {
 resource "aws_nat_gateway" "env" {
   subnet_id     = "${element(aws_subnet.nat.*.id,count.index)}"
   allocation_id = "${element(aws_eip.nat.*.id,count.index)}"
-  count         = "${var.az_count}"
+  count         = "${var.az_count*(signum(var.nat_count)-1)*-1+var.nat_count}"
 }
 
 resource "aws_route_table" "nat" {
@@ -205,7 +205,7 @@ resource "aws_subnet" "common" {
 resource "aws_route" "common" {
   route_table_id         = "${element(aws_route_table.common.*.id,count.index)}"
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${element(aws_nat_gateway.env.*.id,count.index)}"
+  nat_gateway_id         = "${element(aws_nat_gateway.env.*.id,count.index%(var.az_count*(signum(var.nat_count)-1)*-1+var.nat_count))}"
   count                  = "${var.az_count}"
 }
 

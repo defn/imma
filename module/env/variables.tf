@@ -2,6 +2,10 @@ variable "env_name" {}
 
 variable "az_count" {}
 
+variable "nat_count" {
+  default = "0"
+}
+
 variable "nat_bits" {
   default = "12"
 }
