@@ -2,17 +2,20 @@
   "data": {
     "aws_region": {
       "current": {
-        "current": true
+        "name": "${var.aws_region}"
       }
     }
   },
   "provider": {
-    "aws": {},
+    "aws": {
+      "region": "${var.aws_region}"
+    },
     "consul": {
       "datacenter": "${var.consul_dc}"
     }
   },
   "variable": {
+    "aws_region": {},
     "consul_dc": {
       "default": "dc1"
     }

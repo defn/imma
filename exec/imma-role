@@ -6,8 +6,9 @@ function main {
   source normalize
 
   local nm_role="$1"; shift
+  local the_code="$1"; shift
 
-  exec assume-aws-role "${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}" "$@"
+  exec assume-aws-role "${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}" "$the_code" env "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"

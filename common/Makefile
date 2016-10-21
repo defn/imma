@@ -21,7 +21,7 @@ remote links:
 	$(MAKE) $(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD) | cut -d- -f1)-$@
 
 env-%-remote:
-	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=us-west-1" -backend-config="key=$(shell basename $(shell pwd))/terraform.tfstate"
+	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=us-west-1" -backend-config="key=env-$(shell basename $(shell pwd))/terraform.tfstate"
 
 app-%-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=us-west-1" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"

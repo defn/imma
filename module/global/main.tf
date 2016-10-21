@@ -1,16 +1,10 @@
 provider "aws" {
+  region = "${var.aws_region}"
+}
+
+provider "aws" {
   alias  = "us_west_1"
   region = "us-west-1"
-}
-
-provider "aws" {
-  alias  = "us_west_2"
-  region = "us-west-2"
-}
-
-provider "aws" {
-  alias  = "us_east_1"
-  region = "us-east-1"
 }
 
 resource "aws_iam_group" "administrators" {
@@ -28,14 +22,14 @@ resource "aws_iam_group_policy_attachment" "administrators_administrator_access"
 }
 
 resource "aws_s3_bucket" "remote_state" {
-  bucket   = "${var.s3_remote_state}"
-  acl      = "private"
-  provider = "aws.us_west_1"
+  bucket = "${var.s3_remote_state}"
+  acl    = "private"
+
+  #provider = "aws.us_west_1"
 
   versioning {
     enabled = true
   }
-
   tags {
     "ManagedBy" = "terraform"
     "Env"       = "global"

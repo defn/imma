@@ -3,6 +3,7 @@
   "provider": {},
   "variable": {
     "aws_account_id": {},
+    "aws_region": {},
     "domain_name": {},
     "s3_remote_state": {}
   },

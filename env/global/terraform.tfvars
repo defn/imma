@@ -1,5 +1,7 @@
+aws_account_id = "548373030883"
+
 domain_name = "imma.io"
 
-s3_remote_state = "imma-io-remote-state"
+aws_region = "us-west-1"
 
-aws_account_id = "548373030883"
+s3_remote_state = "imma-io-remote-state"
