@@ -6,8 +6,8 @@ function main {
   source normalize
 
   local nm_env="$1"; shift
-  local tmp_fogg="$(mktemp -t XXXXXX)"
 
+  local tmp_fogg="$(mktemp -t XXXXXX)"
   hcltool "$shome/common/env.tf" > "$tmp_fogg"
 
   cat "$tmp_fogg" \
