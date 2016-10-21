@@ -18,6 +18,10 @@ variable "env_domain_name" {
   default = ""
 }
 
+variable "want_fs" {
+  default = "1"
+}
+
 output "vpc_id" {
   value = "${aws_vpc.env.id}"
 }

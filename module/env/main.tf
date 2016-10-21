@@ -244,7 +244,7 @@ module "fs" {
   env_name = "${var.env_name}"
   subnets  = ["${aws_subnet.common.*.id}"]
   az_count = "${var.az_count}"
-  want_fs  = "1"
+  want_fs  = "${var.want_fs}"
 }
 
 resource "aws_route53_record" "fs" {
@@ -253,5 +253,5 @@ resource "aws_route53_record" "fs" {
   type    = "CNAME"
   ttl     = "60"
   records = ["${element(module.fs.efs_dns_names,count.index)}"]
-  count   = "${var.az_count}"
+  count   = "${var.az_count*var.want_fs}"
 }

@@ -15,6 +15,9 @@
     },
     "nat_bits": {
       "default": "12"
+    },
+    "want_fs": {
+      "default": "1"
     }
   },
   "output": {
