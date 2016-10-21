@@ -10,7 +10,9 @@ provider "aws" {
   region = "${data.terraform_remote_state.env.aws_region}"
 }
 
-data "aws_region" "current" {}
+data "aws_region" "current" {
+  current = true
+}
 
 module "app" {
   source              = "../../module/app"
