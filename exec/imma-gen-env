@@ -15,11 +15,13 @@ function main {
     | (runmany 'cat $1/export.json'; runmany 'hcltool ../../common/$1.tf' global) \
     | jq -s 'reduce .[] as $exp ({}; . * $exp)' > "$tmp_fogg.modules"
 
-	jq -n --argfile seed "$tmp_fogg" \
-		    --argfile modules "$tmp_fogg.modules" \
-	      --arg env_name "$nm_env" '$seed * $modules |
+	jq -n --argfile seed     "$tmp_fogg" \
+		    --argfile modules  "$tmp_fogg.modules" \
+        --arg     az_count "$(aws ec2 describe-availability-zones --region $(hcltool terraform.tfvars | jq -r '.aws_region') | jq -r '.AvailabilityZones | length')" \
+	      --arg     env_name "$nm_env" '$seed * $modules |
 	      	.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } |
-					.variable.env_name            |= { default: "\($env_name)" }'
+					.variable.env_name            |= { default: "\($env_name)" } |
+          .variable.az_count            |= { default: "\($az_count)" }'
 }
 
 source sub "$BASH_SOURCE" "$@"
