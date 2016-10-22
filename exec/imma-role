@@ -8,7 +8,36 @@ function main {
   local nm_role="$1"; shift
   local the_code="$1"; shift
 
-  exec assume-aws-role "${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}" "$the_code" env "$@"
+  local tmp_credentials="$(mktemp -t XXXXXX)"
+  trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
+
+  gpg --batch --yes --output "$tmp_credentials" --decrypt "$HOME/.aws/credentials.gpg"
+  export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
+
+  local nm_role="${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}"
+  local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].RoleArn')"
+  local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].SerialNumber')"
+
+  local tmp_sts="$(mktemp -t XXXXXX)"
+  trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
+  
+  aws sts assume-role --role-arn "$arn_role" --role-session-name "imma-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"
+
+  unset AWS_SHARED_CREDENTIALS_FILE
+  rm -f "$tmp_credentials"
+
+  export AWS_ACCESS_KEY_ID="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
+  export AWS_SECRET_ACCESS_KEY="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
+  export AWS_SESSION_TOKEN="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+  rm -f "$tmp_sts"
+  
+  if [[ "$#" == 0 ]]; then
+    set -- "$SHELL"
+  fi
+
+  unset AWS_PROFILE
+
+  exec "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
