@@ -1,7 +1,5 @@
-variable "aws_region" {}
-
 output "aws_region" {
-  value = "${var.aws_region}"
+  value = "${data.terraform_remote_state.global.env_region[var.env_name]}"
 }
 
 output "az_count" {
@@ -9,7 +7,7 @@ output "az_count" {
 }
 
 provider "aws" {
-  region = "${var.aws_region}"
+  region = "${data.terraform_remote_state.global.env_region[var.env_name]}"
 }
 
 data "aws_region" "current" {

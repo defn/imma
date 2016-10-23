@@ -52,13 +52,25 @@ variable want_fs {
 
 variable env_cidr {
   default = {
-    "sandbox"          = "172.16.0.0/16"
-    "_reserved_docker" = "172.17.0.0/16"
-    "prod"             = "172.18.0.0/16"
-    "admin"            = "172.19.0.0/16"
-    "dev"              = "172.20.0.0/16"
-    "ireland"          = "172.21.0.0/16"
-    "stage"            = "172.22.0.0/16"
-    "network"          = "172.23.0.0/16"
+    sandbox          = "172.16.0.0/16"
+    _reserved_docker = "172.17.0.0/16"
+    prod             = "172.18.0.0/16"
+    admin            = "172.19.0.0/16"
+    dev              = "172.20.0.0/16"
+    ireland          = "172.21.0.0/16"
+    stage            = "172.22.0.0/16"
+    network          = "172.23.0.0/16"
+  }
+}
+
+variable env_region {
+  default = {
+    network = "us-east-1"
+    admin   = "us-east-1"
+    sandbox = "us-west-1"
+    dev     = "us-west-2"
+    stage   = "us-west-2"
+    prod    = "us-east-2"
+    ireland = "eu-west-1"
   }
 }

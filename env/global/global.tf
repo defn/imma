@@ -10,6 +10,10 @@ output env_cidr {
   value = "${var.env_cidr}"
 }
 
+output env_region {
+  value = "${var.env_region}"
+}
+
 output sys_nets {
   value = "${var.sys_nets}"
 }
