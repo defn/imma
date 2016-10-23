@@ -1,5 +1,8 @@
-all:
+all: .terraform/terraform.tfstate
 	$(MAKE) links get fmt
+
+.terraform/terraform.tfstate:
+	$(MAKE) remote
 
 fmt:
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
