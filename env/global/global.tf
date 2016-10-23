@@ -6,8 +6,8 @@ module "global" {
   s3_remote_state = "${var.s3_remote_state}"
 }
 
-output env_cidr {
-  value = "${var.env_cidr}"
+output env {
+  value = "${var.env}"
 }
 
 output sys_nets {
