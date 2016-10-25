@@ -6,7 +6,8 @@ function main {
   source normalize
 
   local nm_role="$1"; shift
-  local the_code="$1"; shift
+
+  local the_code="$(gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg"  | imma totp)"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
