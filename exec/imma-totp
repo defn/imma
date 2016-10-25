@@ -6,4 +6,5 @@ import onetimepass as otp
 my_secret = sys.stdin.readlines()[0].strip()
 
 my_token = otp.get_totp(my_secret)
-sys.stdout.write('%0d' % my_token)
+sys.stdout.write('{0:06d}'.format(my_token))
+
