@@ -1,5 +1,3 @@
-variable "aws_region" {}
-
 variable "global_remote_state" {}
 
 variable "env_cidr" {}
@@ -10,10 +8,6 @@ variable "nat_nets" {
 
 variable "common_nets" {
   default = []
-}
-
-provider "aws" {
-  region = "${var.aws_region}"
 }
 
 data "terraform_remote_state" "global" {

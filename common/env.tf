@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "${data.terraform_remote_state.global.env_region[var.env_name]}"
+}
+
 data "terraform_remote_state" "global" {
   backend = "local"
 
@@ -16,7 +20,6 @@ module "env" {
   nat_nets            = ["${data.terraform_remote_state.global.sys_nets["nat"]}"]
   common_nets         = ["${data.terraform_remote_state.global.sys_nets["common"]}"]
   want_fs             = "${var.want_fs}"
-  aws_region          = "${data.terraform_remote_state.global.env_region[var.env_name]}"
 }
 
 output "aws_region" {

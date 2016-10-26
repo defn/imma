@@ -4,7 +4,6 @@ module "SERVICE" {
   env_remote_state    = "${var.env_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
-  aws_region          = "${data.terraform_remote_state.env.aws_region}"
   service_name        = "SERVICE"
   service_nets        = ["${data.terraform_remote_state.global.service_nets.SERVICE}"]
   public_network      = "${lookup(var.public_network,"SERVICE","0")}"

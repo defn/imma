@@ -1,5 +1,3 @@
-variable "aws_region" {}
-
 variable "global_remote_state" {}
 
 variable "env_remote_state" {}
@@ -73,10 +71,6 @@ variable "ignore_asg_changes" {
 variable "public_key" {}
 
 variable "user_data" {}
-
-provider "aws" {
-  region = "${var.aws_region}"
-}
 
 data "terraform_remote_state" "global" {
   backend = "local"

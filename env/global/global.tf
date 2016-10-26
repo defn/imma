@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "${var.aws_region}"
+}
+
 module "global" {
   source          = "../../module/global"
   domain_name     = "${var.domain_name}"
