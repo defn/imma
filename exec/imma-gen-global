@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
+function use_global {
+  hcltool "$shome/module/global/variables.tf" | jq --arg tfmod global '{data: (.data//{}), provider: (.provider//{}), variable: (.variable//{} as $vars | reduce (.variable | keys[]) as $v ({}; .[$v] = $vars[$v])), output: (.output//{} | reduce keys[] as $o ({}; .[$o] = {value: "${module.\($tfmod).\($o)}"}))}'
+}
+
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
   source normalize
 
-	hcltool global.tf \
-    | jq -r '.module | map(.source) | unique[]' \
-    | runmany 'cat $1/export.json' \
-    | jq -s 'reduce .[] as $exp ({}; . * $exp)'
+  use_global
 }
 
 source sub "$BASH_SOURCE" "$@"

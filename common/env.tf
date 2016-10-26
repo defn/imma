@@ -1,17 +1,9 @@
-output "aws_region" {
-  value = "${data.terraform_remote_state.global.env_region[var.env_name]}"
-}
+data "terraform_remote_state" "global" {
+  backend = "local"
 
-output "az_count" {
-  value = "${var.az_count}"
-}
-
-provider "aws" {
-  region = "${data.terraform_remote_state.global.env_region[var.env_name]}"
-}
-
-data "aws_region" "current" {
-  current = true
+  config {
+    path = "${var.global_remote_state}"
+  }
 }
 
 module "env" {
@@ -24,4 +16,13 @@ module "env" {
   nat_nets            = ["${data.terraform_remote_state.global.sys_nets["nat"]}"]
   common_nets         = ["${data.terraform_remote_state.global.sys_nets["common"]}"]
   want_fs             = "${var.want_fs}"
+  aws_region          = "${data.terraform_remote_state.global.env_region[var.env_name]}"
+}
+
+output "aws_region" {
+  value = "${data.terraform_remote_state.global.env_region[var.env_name]}"
+}
+
+output "az_count" {
+  value = "${var.az_count}"
 }

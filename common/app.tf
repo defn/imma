@@ -1,13 +1,18 @@
-variable public_network {
-  default = {}
+module "app" {
+  source              = "../../module/app"
+  global_remote_state = "${var.global_remote_state}"
+  env_remote_state    = "${var.env_remote_state}"
+  az_count            = "${var.az_count}"
+  app_name            = "${var.app_name}"
+  aws_region          = "${data.terraform_remote_state.env.aws_region}"
 }
 
-variable want_fs {
-  default = {}
-}
+data "terraform_remote_state" "global" {
+  backend = "local"
 
-variable instance_type {
-  default = {}
+  config {
+    path = "${var.global_remote_state}"
+  }
 }
 
 data "terraform_remote_state" "env" {
@@ -18,18 +23,14 @@ data "terraform_remote_state" "env" {
   }
 }
 
-provider "aws" {
-  region = "${data.terraform_remote_state.env.aws_region}"
+variable public_network {
+  default = {}
 }
 
-data "aws_region" "current" {
-  current = true
+variable want_fs {
+  default = {}
 }
 
-module "app" {
-  source              = "../../module/app"
-  global_remote_state = "${var.global_remote_state}"
-  env_remote_state    = "${var.env_remote_state}"
-  az_count            = "${var.az_count}"
-  app_name            = "${var.app_name}"
+variable instance_type {
+  default = {}
 }
