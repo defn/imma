@@ -11,4 +11,5 @@ module "SERVICE" {
   security_groups     = ["${module.app.app_sg}"]
   instance_type       = ["${lookup(var.instance_type,"SERVICE","t2.nano")}"]
   user_data           = "${var.user_data}"
+  public_key          = "${var.public_key}"
 }
