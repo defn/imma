@@ -1,3 +1,11 @@
+variable public_network {
+  default = {}
+}
+
+variable want_fs {
+  default = {}
+}
+
 data "terraform_remote_state" "env" {
   backend = "local"
 

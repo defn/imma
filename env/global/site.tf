@@ -22,34 +22,6 @@ variable service_nets {
   }
 }
 
-variable public_network {
-  default = {
-    openvpn = "0"
-    bastion = "0"
-    packer  = "0"
-    blocks  = "0"
-    aptly   = "0"
-    nexus   = "0"
-    dns     = "0"
-    ntp     = "0"
-    irssi   = "0"
-  }
-}
-
-variable want_fs {
-  default = {
-    openvpn = "0"
-    bastion = "0"
-    packer  = "0"
-    blocks  = "0"
-    aptly   = "0"
-    nexus   = "0"
-    dns     = "0"
-    ntp     = "0"
-    irssi   = "0"
-  }
-}
-
 variable env_cidr {
   default = {
     sandbox          = "172.16.0.0/16"

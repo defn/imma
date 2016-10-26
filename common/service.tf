@@ -1,8 +1,8 @@
 module "SERVICE" {
   service_name        = "SERVICE"
-  service_nets        = ["${data.terraform_remote_state.global.service_nets["SERVICE"]}"]
-  public_network      = "${var.public_network["SERVICE"]}"
-  want_fs             = "${var.want_fs["SERVICE"]}"
+  service_nets        = ["${data.terraform_remote_state.global.service_nets.SERVICE}"]
+  public_network      = "${lookup(var.public_network,"SERVICE","0")}"
+  want_fs             = "${lookup(var.want_fs,"SERVICE","0")}"
   source              = "../../module/service"
   global_remote_state = "${var.global_remote_state}"
   env_remote_state    = "${var.env_remote_state}"

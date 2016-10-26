@@ -21,11 +21,3 @@ output sys_nets {
 output service_nets {
   value = "${var.service_nets}"
 }
-
-output public_network {
-  value = "${var.public_network}"
-}
-
-output want_fs {
-  value = "${want_fs}"
-}
