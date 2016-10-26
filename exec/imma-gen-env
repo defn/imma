@@ -14,6 +14,7 @@ function gen_env {
 }
 
 function gen_app {
+  hcltool "$shome/common/global.tf"
   hcltool "$shome/common/app.tf"
 }
 
@@ -43,10 +44,11 @@ function main {
 		    --argfile modules  "../../module/env/export.json" \
         --argfile seed     "$tmp_fogg" \
 	      --arg     env_name "$nm_env" \
-        '$seed * $modules |
-            .variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } |
-            .variable.az_count            |= { default: "\($az_count)" } |
-            .variable.env_name            |= { default: "\($env_name)" }'
+        '$seed * $modules | .variable |= .*
+            { global_remote_state: { default: "../../env/global/.terraform/terraform.tfstate" },
+              az_count:            { default: "\($az_count)" },
+              env_name:            { default: "\($env_name)" } 
+            }'
 }
 
 source sub "$BASH_SOURCE" "$@"
