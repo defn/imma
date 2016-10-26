@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+function az_count_env {
+  aws ec2 describe-availability-zones --region $(cat ../../env/global/.terraform/terraform.tfstate | jq -r --arg env_name "$nm_env" '.modules[0].outputs.env_region.value[$env_name]') | jq -r '.AvailabilityZones | length'
+}
+
+function az_count_app {
+  cat ../../env/$nm_env/.terraform/terraform.tfstate | jq -r '.modules[0].outputs.az_count.value'
+}
+
+function gen_env { 
+  hcltool "$shome/common/global.tf"
+  hcltool "$shome/common/env.tf" 
+}
+
+function gen_app {
+  hcltool "$shome/common/app.tf"
+}
+
+function gen_services {
+  for s in "$@"; 
+    do jq -n -r --argfile service <(hcltool "$shome/common/service.tf") '$service' | sed "s#SERVICE#${s}#g"
+  done
+}
+
+function merge_map {
+  jq -s 'reduce .[] as $e ({}; . * $e)'
+}
+
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
@@ -8,20 +35,18 @@ function main {
   local nm_env="$1"; shift
 
   local tmp_fogg="$(mktemp -t XXXXXX)"
-  hcltool "$shome/common/env.tf" > "$tmp_fogg"
+  { gen_env
+  } | merge_map > "$tmp_fogg"
 
-  cat "$tmp_fogg" \
-    | jq -r '.module | map(.source) | unique[]' \
-    | (runmany 'cat $1/export.json'; runmany 'hcltool ../../common/$1.tf' global) \
-    | jq -s 'reduce .[] as $exp ({}; . * $exp)' > "$tmp_fogg.modules"
-
-	jq -n --argfile seed     "$tmp_fogg" \
-		    --argfile modules  "$tmp_fogg.modules" \
-        --arg     az_count "$(aws ec2 describe-availability-zones --region $(cat ../../env/global/.terraform/terraform.tfstate | jq -r --arg env_name "$nm_env" '.modules[0].outputs.env_region.value[$env_name]') | jq -r '.AvailabilityZones | length')" \
-	      --arg     env_name "$nm_env" '$seed * $modules |
-	      	.variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } |
-					.variable.env_name            |= { default: "\($env_name)" } |
-          .variable.az_count            |= { default: "\($az_count)" }'
+	jq -n \
+        --arg     az_count "$(az_count_env)" \
+		    --argfile modules  "../../module/env/export.json" \
+        --argfile seed     "$tmp_fogg" \
+	      --arg     env_name "$nm_env" \
+        '$seed * $modules |
+            .variable.global_remote_state |= { default: "../../env/global/.terraform/terraform.tfstate" } |
+            .variable.az_count            |= { default: "\($az_count)" } |
+            .variable.env_name            |= { default: "\($env_name)" }'
 }
 
 source sub "$BASH_SOURCE" "$@"

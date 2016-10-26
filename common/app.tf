@@ -6,6 +6,10 @@ variable want_fs {
   default = {}
 }
 
+variable instance_type {
+  default = {}
+}
+
 data "terraform_remote_state" "env" {
   backend = "local"
 

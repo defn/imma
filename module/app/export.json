@@ -3,7 +3,13 @@
   "provider": {},
   "variable": {
     "app_name": {},
-    "az_count": {}
+    "az_count": {},
+    "public_key": {
+      "default": "etc/ssh-key-pair.pub"
+    },
+    "user_data": {
+      "default": "etc/user-data.template"
+    }
   },
   "output": {
     "app_sg": {

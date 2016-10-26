@@ -9,6 +9,6 @@ module "SERVICE" {
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   security_groups     = ["${module.app.app_sg}"]
-  instance_type       = ["${var.instance_type}"]
+  instance_type       = ["${lookup(var.instance_type,"SERVICE","t2.nano")}"]
   user_data           = "${var.user_data}"
 }
