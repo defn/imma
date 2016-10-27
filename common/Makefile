@@ -4,7 +4,7 @@ all: .terraform/terraform.tfstate _fogg.tf.json
 .terraform/terraform.tfstate:
 	$(MAKE) remote
 
-_fogg.tf.json: ../../common/env.tf ../../common/app.tf ../../common/service.tf
+_fogg.tf.json: ../../common/Makefile ../../common/env.tf ../../common/app.tf ../../common/service.tf ../../module/global/variables.tf  ../../module/env/variables.tf  ../../module/app/variables.tf
 	$(MAKE) links
 
 etc/ssh-key-pair:
