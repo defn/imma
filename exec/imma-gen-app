@@ -16,6 +16,10 @@ function az_count {
   aws ec2 describe-availability-zones --region $(cat ../../env/global/.terraform/terraform.tfstate | jq -r --arg env_name "$nm_env" '.modules[0].outputs.env_region.value[$env_name]') | jq -r '.AvailabilityZones | length'
 }
 
+function gen_global { 
+  hcltool "$shome/common/global.tf" 
+}
+
 function gen_env { 
   hcltool "$shome/common/env.tf" 
 }
@@ -48,15 +52,15 @@ function main {
   } | merge_map > "$tmp_fogg"
 
 	jq -n \
-        --arg     az_count "$(az_count)" \
-        --argfile modules   <(use_app) \
-        --arg     app_name "$nm_app" \
         --argfile seed     "$tmp_fogg" \
+        --argfile modules   <(use_app) \
+        --arg     az_count "$(az_count)" \
 	      --arg     env_name "$nm_env" \
+        --arg     app_name "$nm_app" \
         '$seed * $modules | .variable |= .*
             { az_count:            { default: "\($az_count)" },
               app_name:            { default: "\($app_name)" },
-              env_remote_state:    { default: "../../env/\($env_name)/.terraform/terraform.tfstate" } 
+              env_remote_state:    { default: "../../env/\($env_name)/.terraform/terraform.tfstate" }
             }'
 }
 

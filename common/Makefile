@@ -1,10 +1,10 @@
-all: .terraform/terraform.tfstate _fogg.tf.json
+all: _fogg.tf.json
 	$(MAKE) fmt
 
 .terraform/terraform.tfstate:
 	$(MAKE) remote
 
-_fogg.tf.json: ../../common/Makefile ../../common/env.tf ../../common/app.tf ../../common/service.tf ../../module/global/variables.tf  ../../module/env/variables.tf  ../../module/app/variables.tf
+_fogg.tf.json: ../../common/Makefile ../../common/env.tf ../../common/app.tf ../../common/service.tf ../../module/global/variables.tf  ../../module/env/variables.tf  ../../module/app/variables.tf .terraform/terraform.tfstate
 	$(MAKE) links
 
 etc/ssh-key-pair:
@@ -14,7 +14,7 @@ etc/ssh-key-pair:
 fmt:
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
-plan apply refresh get:
+plan apply refresh get: _fogg.tf.json
 	terraform $@
 
 output:

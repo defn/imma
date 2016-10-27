@@ -21,6 +21,7 @@ module "env" {
   aws_region          = "${data.terraform_remote_state.global.env_region[var.env_name]}"
   nat_count           = "${var.nat_count}"
   want_fs             = "${var.want_fs}"
+  want_nat            = "${var.want_nat}"
 }
 
 output "global_remote_state" {

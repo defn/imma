@@ -26,6 +26,10 @@ variable "want_fs" {
   default = "1"
 }
 
+variable "want_nat" {
+  default = "1"
+}
+
 output "vpc_id" {
   value = "${aws_vpc.env.id}"
 }
