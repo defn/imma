@@ -1,5 +1,5 @@
 all: .terraform/terraform.tfstate
-	$(MAKE) links get fmt
+	$(MAKE) links fmt
 
 .terraform/terraform.tfstate:
 	$(MAKE) remote

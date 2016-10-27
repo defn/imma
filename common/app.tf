@@ -4,7 +4,7 @@ provider "aws" {
 
 module "app" {
   source              = "../../module/app"
-  global_remote_state = "${var.global_remote_state}"
+  global_remote_state = "${data.terraform_remote_state.env.global_remote_state}"
   env_remote_state    = "${var.env_remote_state}"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
@@ -14,7 +14,7 @@ data "terraform_remote_state" "global" {
   backend = "local"
 
   config {
-    path = "${var.global_remote_state}"
+    path = "${data.terraform_remote_state.env.global_remote_state}"
   }
 }
 
@@ -36,4 +36,12 @@ variable want_fs {
 
 variable instance_type {
   default = {}
+}
+
+output global_remote_state {
+  value = "${data.terraform_remote_state.env.global_remote_state}"
+}
+
+output env_remote_state {
+  value = "${var.env_remote_state}"
 }

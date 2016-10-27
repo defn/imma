@@ -12,12 +12,8 @@ function use_app {
   hcltool "$shome/module/app/variables.tf" | jq --arg tfmod app '{data: (.data//{}), provider: (.provider//{}), variable: (.variable//{} as $vars | reduce (.variable | keys[]) as $v ({}; .[$v] = $vars[$v])), output: (.output//{} | reduce keys[] as $o ({}; .[$o] = {value: "${module.\($tfmod).\($o)}"}))}'
 }
 
-function az_count_env {
+function az_count {
   aws ec2 describe-availability-zones --region $(cat ../../env/global/.terraform/terraform.tfstate | jq -r --arg env_name "$nm_env" '.modules[0].outputs.env_region.value[$env_name]') | jq -r '.AvailabilityZones | length'
-}
-
-function az_count_app {
-  cat ../../env/$nm_env/.terraform/terraform.tfstate | jq -r '.modules[0].outputs.az_count.value'
 }
 
 function gen_env { 
@@ -52,14 +48,13 @@ function main {
   } | merge_map > "$tmp_fogg"
 
 	jq -n \
-        --arg     az_count "$(az_count_app)" \
+        --arg     az_count "$(az_count)" \
         --argfile modules   <(use_app) \
         --arg     app_name "$nm_app" \
         --argfile seed     "$tmp_fogg" \
 	      --arg     env_name "$nm_env" \
         '$seed * $modules | .variable |= .*
-            { global_remote_state: { default: "../../env/global/.terraform/terraform.tfstate" },
-              az_count:            { default: "\($az_count)" },
+            { az_count:            { default: "\($az_count)" },
               app_name:            { default: "\($app_name)" },
               env_remote_state:    { default: "../../env/\($env_name)/.terraform/terraform.tfstate" } 
             }'

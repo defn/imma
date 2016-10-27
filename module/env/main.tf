@@ -1,3 +1,5 @@
+variable "aws_region" {}
+
 variable "global_remote_state" {}
 
 variable "env_cidr" {}
@@ -254,4 +256,138 @@ resource "aws_route53_record" "fs" {
   ttl     = "60"
   records = ["${element(module.fs.efs_dns_names,count.index)}"]
   count   = "${var.az_count*var.want_fs}"
+}
+
+#resource "aws_vpc_endpoint" "s3" {
+
+#  vpc_id       = "${aws_vpc.env.id}"
+
+#  service_name = "com.amazonaws.${var.aws_region}.s3"
+
+#}
+
+resource "aws_s3_bucket" "lb" {
+  bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-lb"
+  acl    = "private"
+
+  versioning {
+    enabled = true
+  }
+
+  tags {
+    "ManagedBy" = "terraform"
+    "Env"       = "${var.env_name}"
+  }
+}
+
+resource "aws_cloudwatch_log_group" "flow_log" {
+  name = "${var.env_name}-flow-log"
+}
+
+resource "aws_iam_role" "flow_log" {
+  name = "${var.env_name}-flow-log"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "flow_log" {
+  name = "${var.env_name}-flow-log"
+  role = "${aws_iam_role.flow_log.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}   
+EOF
+}
+
+resource "aws_flow_log" "env" {
+  log_group_name = "${aws_cloudwatch_log_group.flow_log.name}"
+  iam_role_arn   = "${aws_iam_role.flow_log.arn}"
+  vpc_id         = "${aws_vpc.env.id}"
+  traffic_type   = "ALL"
+}
+
+resource "aws_s3_bucket" "s3-meta" {
+  bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-s3-meta"
+  acl    = "log-delivery-write"
+
+  versioning {
+    enabled = true
+  }
+
+  tags {
+    "ManagedBy" = "terraform"
+    "Env"       = "${var.env_name}"
+  }
+}
+
+resource "aws_s3_bucket" "s3" {
+  bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-s3"
+  acl    = "log-delivery-write"
+
+  logging {
+    target_bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-s3-meta"
+    target_prefix = "log/"
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  tags {
+    "ManagedBy" = "terraform"
+    "Env"       = "${var.env_name}"
+  }
+}
+
+resource "aws_s3_bucket" "website" {
+  bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-website"
+  acl    = "private"
+
+  logging {
+    target_bucket = "b-${format("%.8s",sha1(data.terraform_remote_state.global.aws_account_id))}-${var.env_name}-s3"
+    target_prefix = "log/"
+  }
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  tags {
+    "ManagedBy" = "terraform"
+    "Env"       = "${var.env_name}"
+  }
 }

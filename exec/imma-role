@@ -24,6 +24,7 @@ function main {
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
   
+  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
   aws sts assume-role --role-arn "$arn_role" --role-session-name "imma-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"
 
   unset AWS_SHARED_CREDENTIALS_FILE
@@ -34,13 +35,15 @@ function main {
   export AWS_SESSION_TOKEN="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   rm -f "$tmp_sts"
   
+  unset AWS_PROFILE
+  
   if [[ "$#" == 0 ]]; then
-    set -- "$SHELL"
+    set | egrep '^AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)='
+    echo export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+  else
+    exec "$@"
   fi
 
-  unset AWS_PROFILE
-
-  exec "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"

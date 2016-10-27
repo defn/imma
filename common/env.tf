@@ -18,14 +18,15 @@ module "env" {
   env_cidr            = "${data.terraform_remote_state.global.env_cidr[var.env_name]}"
   nat_nets            = ["${data.terraform_remote_state.global.sys_nets["nat"]}"]
   common_nets         = ["${data.terraform_remote_state.global.sys_nets["common"]}"]
+  aws_region          = "${data.terraform_remote_state.global.env_region[var.env_name]}"
   nat_count           = "${var.nat_count}"
   want_fs             = "${var.want_fs}"
 }
 
-output "aws_region" {
-  value = "${data.terraform_remote_state.global.env_region[var.env_name]}"
+output "global_remote_state" {
+  value = "${var.global_remote_state}"
 }
 
-output "az_count" {
-  value = "${var.az_count}"
+output "aws_region" {
+  value = "${data.terraform_remote_state.global.env_region[var.env_name]}"
 }
