@@ -207,22 +207,8 @@ resource "aws_route_table_association" "service_public" {
 }
 
 resource "aws_iam_role" "service" {
-  name = "${data.terraform_remote_state.env.env_name}-${var.app_name}-${var.service_name}"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": { 
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
+  name               = "${data.terraform_remote_state.env.env_name}-${var.app_name}-${var.service_name}"
+  assume_role_policy = "${file(join("/",list(path.module,"etc","iam-ec2-assume-role.json")))}"
 }
 
 resource "aws_iam_instance_profile" "service" {
