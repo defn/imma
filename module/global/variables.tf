@@ -1,5 +1,3 @@
-variable "aws_account_id" {}
-
 variable "domain_name" {}
 
 variable "aws_region" {}
@@ -7,7 +5,7 @@ variable "aws_region" {}
 variable "s3_remote_state" {}
 
 output "aws_account_id" {
-  value = "${var.aws_account_id}"
+  value = "${data.aws_caller_identity.current.account_id}"
 }
 
 output "s3_remote_state" {

@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" { }
+
 resource "aws_iam_group" "administrators" {
   name = "administrators"
 }
@@ -27,7 +29,7 @@ resource "aws_s3_bucket" "remote_state" {
 }
 
 resource "aws_s3_bucket" "s3-meta" {
-  bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-s3-meta"
+  bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-s3-meta"
   acl    = "log-delivery-write"
 
   versioning {
@@ -41,11 +43,11 @@ resource "aws_s3_bucket" "s3-meta" {
 }
 
 resource "aws_s3_bucket" "s3" {
-  bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-s3"
+  bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-s3"
   acl    = "log-delivery-write"
 
   logging {
-    target_bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-s3-meta"
+    target_bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-s3-meta"
     target_prefix = "log/"
   }
 
@@ -60,11 +62,11 @@ resource "aws_s3_bucket" "s3" {
 }
 
 resource "aws_s3_bucket" "tf_remote_state" {
-  bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-tf-remote-state"
+  bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-tf-remote-state"
   acl    = "private"
 
   logging {
-    target_bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-s3"
+    target_bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-s3"
     target_prefix = "log/"
   }
 
@@ -88,7 +90,7 @@ data "aws_iam_policy_document" "billing" {
     ]
 
     resources = [
-      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-billing",
+      "arn:aws:s3:::b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-billing",
     ]
 
     principals {
@@ -103,7 +105,7 @@ data "aws_iam_policy_document" "billing" {
     ]
 
     resources = [
-      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-billing/AWSLogs/*",
+      "arn:aws:s3:::b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-billing/AWSLogs/*",
     ]
 
     principals {
@@ -114,11 +116,11 @@ data "aws_iam_policy_document" "billing" {
 }
 
 resource "aws_s3_bucket" "billing" {
-  bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-billing"
+  bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-billing"
   acl    = "private"
 
   logging {
-    target_bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-s3"
+    target_bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-s3"
     target_prefix = "log/"
   }
 
@@ -136,7 +138,7 @@ resource "aws_s3_bucket" "billing" {
 
 resource "aws_cloudtrail" "global" {
   name                          = "global-cloudtrail"
-  s3_bucket_name                = "b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail"
+  s3_bucket_name                = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-cloudtrail"
   include_global_service_events = true
   is_multi_region_trail         = true
 }
@@ -149,7 +151,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail",
+      "arn:aws:s3:::b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-cloudtrail",
     ]
 
     principals {
@@ -164,7 +166,7 @@ data "aws_iam_policy_document" "cloudtrail" {
     ]
 
     resources = [
-      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail/*",
+      "arn:aws:s3:::b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-cloudtrail/*",
     ]
 
     principals {
@@ -181,6 +183,6 @@ data "aws_iam_policy_document" "cloudtrail" {
 }
 
 resource "aws_s3_bucket" "cloudtrail" {
-  bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail"
+  bucket = "b-${format("%.8s",sha1(data.aws_caller_identity.current.account_id))}-global-cloudtrail"
   policy = "${data.aws_iam_policy_document.cloudtrail.json}"
 }

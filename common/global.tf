@@ -5,7 +5,6 @@ provider "aws" {
 module "global" {
   source          = "../../module/global"
   domain_name     = "${var.domain_name}"
-  aws_account_id  = "${var.aws_account_id}"
   aws_region      = "${var.aws_region}"
   s3_remote_state = "${var.s3_remote_state}"
 }

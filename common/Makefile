@@ -14,6 +14,9 @@ etc/ssh-key-pair:
 fmt:
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
 
+clean:
+	rm -f _fogg.tf.json
+
 plan apply refresh get: _fogg.tf.json
 	terraform $@
 
