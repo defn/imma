@@ -1,8 +1,15 @@
-all: .terraform/terraform.tfstate
-	$(MAKE) links fmt
+all: .terraform/terraform.tfstate _fogg.tf.json
+	$(MAKE) fmt
 
 .terraform/terraform.tfstate:
 	$(MAKE) remote
+
+_fogg.tf.json: ../../common/env.tf ../../common/app.tf ../../common/service.tf
+	$(MAKE) links
+
+etc/ssh-key-pair:
+	mkdir -p etc
+	ssh-keygen -f $@ -C "$(basename $(dirname $PWD))/$(basename $PWD)" -P ''
 
 fmt:
 	runmany 'terraform fmt $$1' $(shell find . -name '*.tf' -o -name '*.tfvars')
@@ -12,10 +19,6 @@ plan apply refresh get:
 
 output:
 	@terraform output -json | jq .
-
-etc/ssh-key-pair:
-	mkdir -p etc
-	ssh-keygen -f $@ -C "$(basename $(dirname $PWD))/$(basename $PWD)" -P ''
 
 instances:
 	 aws ec2 describe-instances | jq -r '[.Reservations[].Instances[]] | flatten | map(select(.State.Name == "running")) | map("\(.InstanceId) \(.State.Name) \((.Tags//[])[] | select(.Key == "aws:autoscaling:groupName") | .Value) \(.PrivateDnsName) \(.PublicDnsName)")[]' | sort -k2 | talign
@@ -33,10 +36,13 @@ links:
 	$(MAKE) $(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD) | cut -d- -f1)-$@
 
 env-global-links:
-	imma gen global > _fogg.tf.json
+	imma gen global > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 env-%-links:
-	imma gen env "$(shell basename $(PWD))" > _fogg.tf.json
+	imma gen env "$(shell basename $(PWD))" > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
 
 app-%-links: etc/ssh-key-pair
-	imma gen app "$(shell basename $(PWD))" "$(shell basename $(shell dirname $(PWD)) | cut -d- -f2-)" $(shell cat ../services) > _fogg.tf.json
+	imma gen app "$(shell basename $(PWD))" "$(shell basename $(shell dirname $(PWD)) | cut -d- -f2-)" $(shell cat ../services) > _fogg.tf.json.1
+	mv _fogg.tf.json.1 _fogg.tf.json
