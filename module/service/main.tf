@@ -206,9 +206,22 @@ resource "aws_route_table_association" "service_public" {
   count          = "${var.az_count*signum(var.public_network)}"
 }
 
+data "aws_iam_policy_document" "service" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "service" {
   name               = "${data.terraform_remote_state.env.env_name}-${var.app_name}-${var.service_name}"
-  assume_role_policy = "${file(join("/",list(path.module,"etc","iam-ec2-assume-role.json")))}"
+  assume_role_policy = "${data.aws_iam_policy_document.service.json}"
 }
 
 resource "aws_iam_instance_profile" "service" {

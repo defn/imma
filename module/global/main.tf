@@ -80,12 +80,36 @@ resource "aws_s3_bucket" "tf_remote_state" {
 
 data "aws_billing_service_account" "global" {}
 
-data "template_file" "billing" {
-  template = "${file("${path.module}/etc/iam-s3-billing.json")}"
+data "aws_iam_policy_document" "billing" {
+  statement {
+    actions = [
+      "s3:GetBucketAcl",
+      "s3:GetBucketPolicy",
+    ]
 
-  vars {
-    bucket     = "b-${format("%.8s",sha1(var.aws_account_id))}-global-billing"
-    billing_id = "${data.aws_billing_service_account.global.id}"
+    resources = [
+      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-billing",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_billing_service_account.global.id}:root"]
+    }
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-billing/AWSLogs/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_billing_service_account.global.id}:root"]
+    }
   }
 }
 
@@ -98,7 +122,7 @@ resource "aws_s3_bucket" "billing" {
     target_prefix = "log/"
   }
 
-  policy = "${data.template_file.billing.rendered}"
+  policy = "${data.aws_iam_policy_document.billing.json}"
 
   versioning {
     enabled = true
@@ -117,16 +141,46 @@ resource "aws_cloudtrail" "global" {
   is_multi_region_trail         = true
 }
 
-data "template_file" "cloudtrail" {
-  template = "${file("${path.module}/etc/iam-s3-cloudtrail.json")}"
+data "aws_iam_policy_document" "cloudtrail" {
+  statement {
+    actions = [
+      "s3:GetBucketAcl",
+      "s3:GetBucketPolicy",
+    ]
 
-  vars {
-    bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail"
+    resources = [
+      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "arn:aws:s3:::b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail/*",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
   }
 }
 
 resource "aws_s3_bucket" "cloudtrail" {
   bucket = "b-${format("%.8s",sha1(var.aws_account_id))}-global-cloudtrail"
-
-  policy = "${data.template_file.cloudtrail.rendered}"
+  policy = "${data.aws_iam_policy_document.cloudtrail.json}"
 }

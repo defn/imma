@@ -284,17 +284,42 @@ resource "aws_cloudwatch_log_group" "flow_log" {
   name = "${var.env_name}-flow-log"
 }
 
-resource "aws_iam_role" "flow_log" {
-  name = "${var.env_name}-flow-log"
+data "aws_iam_policy_document" "flow_log" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
 
-  assume_role_policy = "${file(join("/",list(path.module,"etc","iam-flow-log-assume-role.json")))}"
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "flow_log" {
+  name               = "${var.env_name}-flow-log"
+  assume_role_policy = "${data.aws_iam_policy_document.flow_log.json}"
+}
+
+data "aws_iam_policy_document" "flow_log_logs" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "flow_log" {
-  name = "${var.env_name}-flow-log"
-  role = "${aws_iam_role.flow_log.id}"
-
-  policy = "${file(join("/",list(path.module,"etc","iam-flow-log-logs.json")))}"
+  name   = "${var.env_name}-flow-log"
+  role   = "${aws_iam_role.flow_log.id}"
+  policy = "${data.aws_iam_policy_document.flow_log_logs.json}"
 }
 
 resource "aws_flow_log" "env" {
