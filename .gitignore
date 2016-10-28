@@ -3,3 +3,4 @@
 ssh-*
 /bin/hcltool
 /vendor/virtualenv
+terraform.tfstate.backup
