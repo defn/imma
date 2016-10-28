@@ -1,0 +1,112 @@
+{
+  "data": {
+    "terraform_remote_state": {
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "../../env/global/.terraform/terraform.tfstate"
+        }
+      }
+    }
+  },
+  "module": {
+    "env": {
+      "aws_region": "${data.terraform_remote_state.global.env_region[var.env_name]}",
+      "az_count": "${var.az_count}",
+      "common_nets": [
+        "${data.terraform_remote_state.global.sys_nets[\"common\"]}"
+      ],
+      "env_cidr": "${data.terraform_remote_state.global.env_cidr[var.env_name]}",
+      "env_name": "${var.env_name}",
+      "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
+      "nat_count": "${var.nat_count}",
+      "nat_nets": [
+        "${data.terraform_remote_state.global.sys_nets[\"nat\"]}"
+      ],
+      "source": "../../module/env",
+      "want_fs": "${var.want_fs}",
+      "want_nat": "${var.want_nat}"
+    }
+  },
+  "output": {
+    "aws_region": {
+      "value": "${data.terraform_remote_state.global.env_region[var.env_name]}"
+    },
+    "env_name": {
+      "value": "${module.env.env_name}"
+    },
+    "igw_id": {
+      "value": "${module.env.igw_id}"
+    },
+    "nat_gateways": {
+      "value": "${module.env.nat_gateways}"
+    },
+    "private_zone_id": {
+      "value": "${module.env.private_zone_id}"
+    },
+    "private_zone_name": {
+      "value": "${module.env.private_zone_name}"
+    },
+    "private_zone_servers": {
+      "value": "${module.env.private_zone_servers}"
+    },
+    "sg_efs": {
+      "value": "${module.env.sg_efs}"
+    },
+    "sg_env": {
+      "value": "${module.env.sg_env}"
+    },
+    "sg_env_lb": {
+      "value": "${module.env.sg_env_lb}"
+    },
+    "sg_env_lb_private": {
+      "value": "${module.env.sg_env_lb_private}"
+    },
+    "sg_env_lb_public": {
+      "value": "${module.env.sg_env_lb_public}"
+    },
+    "sg_env_private": {
+      "value": "${module.env.sg_env_private}"
+    },
+    "sg_env_public": {
+      "value": "${module.env.sg_env_public}"
+    },
+    "vpc_id": {
+      "value": "${module.env.vpc_id}"
+    }
+  },
+  "provider": {
+    "aws": {
+      "region": "${data.terraform_remote_state.global.env_region[var.env_name]}"
+    }
+  },
+  "variable": {
+    "az_count": {
+      "default": "3"
+    },
+    "common_bits": {
+      "default": "8"
+    },
+    "env_domain_name": {
+      "default": ""
+    },
+    "env_name": {
+      "default": "dev"
+    },
+    "env_zone": {
+      "default": ""
+    },
+    "nat_bits": {
+      "default": "12"
+    },
+    "nat_count": {
+      "default": "0"
+    },
+    "want_fs": {
+      "default": "1"
+    },
+    "want_nat": {
+      "default": "1"
+    }
+  }
+}

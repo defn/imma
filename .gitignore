@@ -3,4 +3,3 @@
 ssh-*
 /bin/hcltool
 /vendor/virtualenv
-_fogg.tf.json

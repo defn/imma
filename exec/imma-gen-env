@@ -1,64 +1,25 @@
 #!/usr/bin/env bash
 
-function use_global {
-  hcltool "$shome/module/global/variables.tf" | jq --arg tfmod global '{data: (.data//{}), provider: (.provider//{}), variable: (.variable//{} as $vars | reduce (.variable | keys[]) as $v ({}; .[$v] = $vars[$v])), output: (.output//{} | reduce keys[] as $o ({}; .[$o] = {value: "${module.\($tfmod).\($o)}"}))}'
-}
+function gen {
+  local tmp_seed="$1"; shift
+  local tmp_modules="$1"; shift
+  local nm_env="$1"
 
-function use_env {
-  hcltool "$shome/module/env/variables.tf" | jq --arg tfmod env '{data: (.data//{}), provider: (.provider//{}), variable: (.variable//{} as $vars | reduce (.variable | keys[]) as $v ({}; .[$v] = $vars[$v])), output: (.output//{} | reduce keys[] as $o ({}; .[$o] = {value: "${module.\($tfmod).\($o)}"}))}'
-}
-
-function use_app {
-  hcltool "$shome/module/app/variables.tf" | jq --arg tfmod app '{data: (.data//{}), provider: (.provider//{}), variable: (.variable//{} as $vars | reduce (.variable | keys[]) as $v ({}; .[$v] = $vars[$v])), output: (.output//{} | reduce keys[] as $o ({}; .[$o] = {value: "${module.\($tfmod).\($o)}"}))}'
-}
-
-function az_count {
-  aws ec2 describe-availability-zones --region $(cat ../../env/global/.terraform/terraform.tfstate | jq -r --arg env_name "$nm_env" '.modules[0].outputs.env_region.value[$env_name]') | jq -r '.AvailabilityZones | length'
-}
-
-function gen_global { 
-  hcltool "$shome/common/global.tf" 
-}
-
-function gen_env { 
-  hcltool "$shome/common/env.tf" 
-}
-
-function gen_app {
-  hcltool "$shome/common/app.tf"
-}
-
-function gen_services {
-  for s in "$@"; 
-    do jq -n -r --argfile service <(hcltool "$shome/common/service.tf") '$service' | sed "s#SERVICE#${s}#g"
-  done
-}
-
-function merge_map {
-  jq -s 'reduce .[] as $e ({}; . * $e)'
+	jq -n \
+     --argfile seed     "$tmp_seed" \
+     --argfile modules  "$tmp_modules" \
+     --arg     az_count "$(az_count)" \
+	   --arg     env_name "$nm_env" \
+        '$seed * $modules | .variable |= .*
+            { az_count:            { default: "\($az_count)" },
+              env_name:            { default: "\($env_name)" }
+            }'
 }
 
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
-  source normalize
-
-  local nm_env="$1"; shift
-
-  local tmp_fogg="$(mktemp -t XXXXXX)"
-  { gen_env
-  } | merge_map > "$tmp_fogg"
-
-	jq -n \
-        --argfile seed     "$tmp_fogg" \
-        --argfile modules   <(use_env) \
-        --arg     az_count "$(az_count)" \
-	      --arg     env_name "$nm_env" \
-        '$seed * $modules | .variable |= .*
-            { az_count:            { default: "\($az_count)" },
-              env_name:            { default: "\($env_name)" },
-              global_remote_state: { default: "../../env/global/.terraform/terraform.tfstate" }
-            }'
+  source _imma "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"

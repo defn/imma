@@ -36,6 +36,7 @@ app-%-remote:
 	terraform remote config -backend=s3 -backend-config="bucket=imma-io-remote-state" -backend-config="region=$(shell hcltool ../../env/global/terraform.tfvars | jq -r '.aws_region')" -backend-config="key=$(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD))/terraform.tfstate"
 
 links:
+	mkdir -p etc
 	$(MAKE) $(shell basename $(shell dirname $(PWD)))-$(shell basename $(PWD) | cut -d- -f1)-$@
 
 env-global-links:

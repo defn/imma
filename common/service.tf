@@ -1,7 +1,7 @@
 module "SERVICE" {
-  source              = "../../module/service"
-  global_remote_state = "${data.terraform_remote_state.env.global_remote_state}"
-  env_remote_state    = "${var.env_remote_state}"
+  source              = "../../../../module/service"
+  global_remote_state = "../../.terraform/terraform.tfstate"
+  env_remote_state    = "../.terraform/terraform.tfstate"
   az_count            = "${var.az_count}"
   app_name            = "${var.app_name}"
   service_name        = "SERVICE"
