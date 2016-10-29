@@ -11,18 +11,10 @@
   },
   "module": {
     "env": {
-      "aws_region": "${data.terraform_remote_state.global.env_region[var.env_name]}",
       "az_count": "${var.az_count}",
-      "common_nets": [
-        "${data.terraform_remote_state.global.sys_nets[\"common\"]}"
-      ],
-      "env_cidr": "${data.terraform_remote_state.global.env_cidr[var.env_name]}",
       "env_name": "${var.env_name}",
       "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
       "nat_count": "${var.nat_count}",
-      "nat_nets": [
-        "${data.terraform_remote_state.global.sys_nets[\"nat\"]}"
-      ],
       "source": "../../../fogg/module/env",
       "want_fs": "${var.want_fs}",
       "want_nat": "${var.want_nat}"

@@ -22,53 +22,17 @@
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
       "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
       "source": "../../../../fogg/module/app"
-    },
-    "bastion": {
-      "app_name": "${var.app_name}",
-      "az_count": "${var.az_count}",
-      "env_remote_state": "../.terraform/terraform.tfstate",
-      "global_remote_state": "../../.terraform/terraform.tfstate",
-      "instance_type": [
-        "${lookup(var.instance_type,\"bastion\",\"t2.nano\")}"
-      ],
-      "public_key": "${var.public_key}",
-      "public_network": "${lookup(var.public_network,\"bastion\",\"0\")}",
-      "security_groups": [
-        "${module.app.app_sg}"
-      ],
-      "service_name": "bastion",
-      "service_nets": [
-        "${data.terraform_remote_state.global.service_nets.bastion}"
-      ],
-      "source": "../../../../fogg/module/service",
-      "user_data": "${var.user_data}",
-      "want_fs": "${lookup(var.want_fs,\"bastion\",\"0\")}"
-    },
-    "openvpn": {
-      "app_name": "${var.app_name}",
-      "az_count": "${var.az_count}",
-      "env_remote_state": "../.terraform/terraform.tfstate",
-      "global_remote_state": "../../.terraform/terraform.tfstate",
-      "instance_type": [
-        "${lookup(var.instance_type,\"openvpn\",\"t2.nano\")}"
-      ],
-      "public_key": "${var.public_key}",
-      "public_network": "${lookup(var.public_network,\"openvpn\",\"0\")}",
-      "security_groups": [
-        "${module.app.app_sg}"
-      ],
-      "service_name": "openvpn",
-      "service_nets": [
-        "${data.terraform_remote_state.global.service_nets.openvpn}"
-      ],
-      "source": "../../../../fogg/module/service",
-      "user_data": "${var.user_data}",
-      "want_fs": "${lookup(var.want_fs,\"openvpn\",\"0\")}"
     }
   },
   "output": {
+    "app_name": {
+      "value": "${module.app.app_name}"
+    },
     "app_sg": {
       "value": "${module.app.app_sg}"
+    },
+    "env_region": {
+      "value": "${data.terraform_remote_state.global.env_region}"
     }
   },
   "provider": {
@@ -85,21 +49,6 @@
     },
     "env_name": {
       "default": "admin"
-    },
-    "instance_type": {
-      "default": {}
-    },
-    "public_key": {
-      "default": "etc/ssh-key-pair.pub"
-    },
-    "public_network": {
-      "default": {}
-    },
-    "user_data": {
-      "default": "etc/user-data.template"
-    },
-    "want_fs": {
-      "default": {}
     }
   }
 }

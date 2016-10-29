@@ -47,7 +47,7 @@
   },
   "variable": {
     "app_name": {
-      "default": "finite"
+      "default": "access"
     },
     "asg_count": {
       "default": 2
@@ -59,13 +59,13 @@
       ]
     },
     "az_count": {
-      "default": "3"
+      "default": "4"
     },
     "display_name": {
       "default": ""
     },
     "env_name": {
-      "default": "dev"
+      "default": "admin"
     },
     "ignore_asg_changes": {
       "default": [
@@ -97,7 +97,7 @@
       ]
     },
     "public_key": {
-      "default": "../../etc/ssh-key-pair.pub"
+      "default": "etc/ssh-key-pair.pub"
     },
     "public_network": {
       "default": "0"
@@ -112,7 +112,7 @@
       "default": "12"
     },
     "service_name": {
-      "default": "irssi"
+      "default": "bastion"
     },
     "termination_policies": {
       "default": [
@@ -120,7 +120,7 @@
       ]
     },
     "user_data": {
-      "default": "../../etc/user-data.template"
+      "default": "etc/user-data.template"
     },
     "want_fs": {
       "default": "0"
