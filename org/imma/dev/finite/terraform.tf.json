@@ -7,7 +7,7 @@
           "path": "../.terraform/terraform.tfstate"
         }
       },
-      "global": {
+      "org": {
         "backend": "local",
         "config": {
           "path": "../../.terraform/terraform.tfstate"
@@ -20,7 +20,7 @@
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
-      "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
+      "org_remote_state": "${data.terraform_remote_state.org.config[\"path\"]}",
       "source": "../../../../fogg/module/app"
     }
   },
@@ -32,7 +32,7 @@
       "value": "${module.app.app_sg}"
     },
     "env_region": {
-      "value": "${data.terraform_remote_state.global.env_region}"
+      "value": "${data.terraform_remote_state.org.env_region}"
     }
   },
   "provider": {
