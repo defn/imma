@@ -9,8 +9,8 @@ resource "aws_security_group_rule" "bastion_ssh" {
 
 resource "aws_security_group_rule" "allow_bastion_ping" {
   type                     = "ingress"
-  from_port                = 9
-  to_port                  = -1
+  from_port                = 8
+  to_port                  = 0
   protocol                 = "icmp"
   source_security_group_id = "${module.service.service_sg}"
   security_group_id        = "${data.terraform_remote_state.env.sg_env}"
@@ -24,3 +24,13 @@ resource "aws_security_group_rule" "allow_bastion_ssh" {
   source_security_group_id = "${module.service.service_sg}"
   security_group_id        = "${data.terraform_remote_state.env.sg_env}"
 }
+
+resource "aws_security_group_rule" "allow_bastion_fan" {
+  type                     = "ingress"
+  from_port                = 8472
+  to_port                  = 8472
+  protocol                 = "udp"
+  source_security_group_id = "${module.service.service_sg}"
+  security_group_id        = "${data.terraform_remote_state.env.sg_env}"
+}
+

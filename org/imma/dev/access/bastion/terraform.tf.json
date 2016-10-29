@@ -39,7 +39,11 @@
       "want_nat": "${var.want_nat}"
     }
   },
-  "output": {},
+  "output": {
+    "asg_names": {
+      "value": "${module.service.asg_names}"
+    }
+  },
   "provider": {
     "aws": {
       "region": "${data.terraform_remote_state.env.aws_region}"
