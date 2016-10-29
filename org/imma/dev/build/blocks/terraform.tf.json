@@ -13,7 +13,7 @@
           "path": "../../.terraform/terraform.tfstate"
         }
       },
-      "org": {
+      "global": {
         "backend": "local",
         "config": {
           "path": "../../../.terraform/terraform.tfstate"
@@ -26,7 +26,7 @@
       "app_remote_state": "${data.terraform_remote_state.app.config[\"path\"]}",
       "az_count": "${var.az_count}",
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
-      "org_remote_state": "${data.terraform_remote_state.org.config[\"path\"]}",
+      "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
       "instance_type": [
         "${var.instance_type}"
       ],

@@ -1,18 +1,18 @@
 {
   "data": {},
   "module": {
-    "org": {
+    "global": {
       "aws_region": "${var.aws_region}",
       "domain_name": "${var.domain_name}",
-      "source": "../../fogg/module/org"
+      "source": "../../fogg/module/global"
     }
   },
   "output": {
     "aws_account_id": {
-      "value": "${module.org.aws_account_id}"
+      "value": "${module.global.aws_account_id}"
     },
     "domain_name": {
-      "value": "${module.org.domain_name}"
+      "value": "${module.global.domain_name}"
     },
     "env_cidr": {
       "value": "${var.env_cidr}"

@@ -7,7 +7,7 @@
           "path": "../.terraform/terraform.tfstate"
         }
       },
-      "org": {
+      "global": {
         "backend": "local",
         "config": {
           "path": "../../.terraform/terraform.tfstate"
@@ -20,14 +20,14 @@
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
-      "org_remote_state": "${data.terraform_remote_state.org.config[\"path\"]}",
+      "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
       "source": "../../../../fogg/module/app"
     },
     "aptly": {
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "../.terraform/terraform.tfstate",
-      "org_remote_state": "../../.terraform/terraform.tfstate",
+      "global_remote_state": "../../.terraform/terraform.tfstate",
       "instance_type": [
         "${lookup(var.instance_type,\"aptly\",\"t2.nano\")}"
       ],
@@ -38,7 +38,7 @@
       ],
       "service_name": "aptly",
       "service_nets": [
-        "${data.terraform_remote_state.org.service_nets.aptly}"
+        "${data.terraform_remote_state.global.service_nets.aptly}"
       ],
       "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
@@ -48,7 +48,7 @@
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "../.terraform/terraform.tfstate",
-      "org_remote_state": "../../.terraform/terraform.tfstate",
+      "global_remote_state": "../../.terraform/terraform.tfstate",
       "instance_type": [
         "${lookup(var.instance_type,\"dns\",\"t2.nano\")}"
       ],
@@ -59,7 +59,7 @@
       ],
       "service_name": "dns",
       "service_nets": [
-        "${data.terraform_remote_state.org.service_nets.dns}"
+        "${data.terraform_remote_state.global.service_nets.dns}"
       ],
       "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
@@ -69,7 +69,7 @@
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "../.terraform/terraform.tfstate",
-      "org_remote_state": "../../.terraform/terraform.tfstate",
+      "global_remote_state": "../../.terraform/terraform.tfstate",
       "instance_type": [
         "${lookup(var.instance_type,\"nexus\",\"t2.nano\")}"
       ],
@@ -80,7 +80,7 @@
       ],
       "service_name": "nexus",
       "service_nets": [
-        "${data.terraform_remote_state.org.service_nets.nexus}"
+        "${data.terraform_remote_state.global.service_nets.nexus}"
       ],
       "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
@@ -90,7 +90,7 @@
       "app_name": "${var.app_name}",
       "az_count": "${var.az_count}",
       "env_remote_state": "../.terraform/terraform.tfstate",
-      "org_remote_state": "../../.terraform/terraform.tfstate",
+      "global_remote_state": "../../.terraform/terraform.tfstate",
       "instance_type": [
         "${lookup(var.instance_type,\"ntp\",\"t2.nano\")}"
       ],
@@ -101,7 +101,7 @@
       ],
       "service_name": "ntp",
       "service_nets": [
-        "${data.terraform_remote_state.org.service_nets.ntp}"
+        "${data.terraform_remote_state.global.service_nets.ntp}"
       ],
       "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
