@@ -3,4 +3,4 @@ fmt:
 
 refresh:
 	runmany 'cd org/$$1 && fogg && fogg remote && terraform get && terraform refresh && terraform plan' imma
-	runmany 'cd org/imma/$$1 && fogg && fogg remote && terraform get && terraform refresh && terraform plan' sandbox dev admin ireland network prod stage
+	runmany 2 'cd org/imma/$$1 && fogg && fogg remote && terraform get && terraform refresh && terraform plan' sandbox dev admin ireland network prod stage

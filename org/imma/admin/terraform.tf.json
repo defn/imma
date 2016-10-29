@@ -23,7 +23,7 @@
       "nat_nets": [
         "${data.terraform_remote_state.global.sys_nets[\"nat\"]}"
       ],
-      "source": "../../../module/env",
+      "source": "../../../fogg/module/env",
       "want_fs": "${var.want_fs}",
       "want_nat": "${var.want_nat}"
     }

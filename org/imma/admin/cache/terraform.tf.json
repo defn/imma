@@ -21,7 +21,7 @@
       "az_count": "${var.az_count}",
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
       "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
-      "source": "../../../../module/app"
+      "source": "../../../../fogg/module/app"
     },
     "aptly": {
       "app_name": "${var.app_name}",
@@ -40,7 +40,7 @@
       "service_nets": [
         "${data.terraform_remote_state.global.service_nets.aptly}"
       ],
-      "source": "../../../../module/service",
+      "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
       "want_fs": "${lookup(var.want_fs,\"aptly\",\"0\")}"
     },
@@ -61,7 +61,7 @@
       "service_nets": [
         "${data.terraform_remote_state.global.service_nets.dns}"
       ],
-      "source": "../../../../module/service",
+      "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
       "want_fs": "${lookup(var.want_fs,\"dns\",\"0\")}"
     },
@@ -82,7 +82,7 @@
       "service_nets": [
         "${data.terraform_remote_state.global.service_nets.nexus}"
       ],
-      "source": "../../../../module/service",
+      "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
       "want_fs": "${lookup(var.want_fs,\"nexus\",\"0\")}"
     },
@@ -103,7 +103,7 @@
       "service_nets": [
         "${data.terraform_remote_state.global.service_nets.ntp}"
       ],
-      "source": "../../../../module/service",
+      "source": "../../../../fogg/module/service",
       "user_data": "${var.user_data}",
       "want_fs": "${lookup(var.want_fs,\"ntp\",\"0\")}"
     }
