@@ -35,7 +35,8 @@
       "service_name": "${var.service_name}",
       "source": "../../../../../fogg/module/service",
       "user_data": "${var.user_data}",
-      "want_fs": "${var.want_fs}"
+      "want_fs": "${var.want_fs}",
+      "want_nat": "${var.want_nat}"
     }
   },
   "output": {},
@@ -96,7 +97,7 @@
       ]
     },
     "public_key": {
-      "default": "etc/ssh-key-pair.pub"
+      "default": "../../etc/ssh-key-pair.pub"
     },
     "public_network": {
       "default": "0"
@@ -119,10 +120,13 @@
       ]
     },
     "user_data": {
-      "default": "etc/user-data.template"
+      "default": "../../etc/user-data.template"
     },
     "want_fs": {
       "default": "0"
+    },
+    "want_nat": {
+      "default": "1"
     }
   }
 }
