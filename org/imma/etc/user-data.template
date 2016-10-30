@@ -76,7 +76,7 @@ lxd:
     trust_password: ubuntu
   bridge:
     mode: existing
-    name: br0
+    name: fan-250
 
 packages:
  - openssh-server
