@@ -8,7 +8,27 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  exec "$@"
+  local pth_base="$shome/org/${CONTEXT_ORG}"
+  local pth_context=
+
+  while [[ "$#" -gt 0 ]]; do
+    if [[ -d "$pth_base/$pth_context/$1" ]]; then
+      pth_context="${pth_context:+${pth_context}/}$1"
+      shift
+    else
+      break
+    fi
+  done
+
+  if [[ -n "$pth_context" ]]; then
+    cd "$pth_base/$pth_context"
+  else
+    pth_context="${PWD#*/org/*/}"
+  fi
+
+  export FOGG_PREFIX="${pth_context//\//-}"
+    
+  aws "$(cat .terraform/terraform.tfstate | jq -r '.modules[0].outputs.aws_region.value')" exec fogg "$@"
 }
 
 source sub-chain "$BASH_SOURCE" "$@"
