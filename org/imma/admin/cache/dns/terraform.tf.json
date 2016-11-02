@@ -1,0 +1,134 @@
+{
+  "data": {
+    "terraform_remote_state": {
+      "app": {
+        "backend": "local",
+        "config": {
+          "path": "../.terraform/terraform.tfstate"
+        }
+      },
+      "env": {
+        "backend": "local",
+        "config": {
+          "path": "../../.terraform/terraform.tfstate"
+        }
+      },
+      "global": {
+        "backend": "local",
+        "config": {
+          "path": "../../../.terraform/terraform.tfstate"
+        }
+      }
+    }
+  },
+  "module": {
+    "service": {
+      "app_remote_state": "${data.terraform_remote_state.app.config[\"path\"]}",
+      "az_count": "${var.az_count}",
+      "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
+      "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
+      "instance_type": [
+        "${var.instance_type}"
+      ],
+      "public_key": "${var.public_key}",
+      "public_network": "${var.public_network}",
+      "service_name": "${var.service_name}",
+      "source": "../../../../../fogg/module/service",
+      "user_data": "${var.user_data}",
+      "want_fs": "${var.want_fs}",
+      "want_nat": "${var.want_nat}"
+    }
+  },
+  "output": {
+    "asg_names": {
+      "value": "${module.service.asg_names}"
+    },
+    "aws_region": {
+      "value": "${data.terraform_remote_state.env.aws_region}"
+    }
+  },
+  "provider": {
+    "aws": {
+      "region": "${data.terraform_remote_state.env.aws_region}"
+    }
+  },
+  "variable": {
+    "app_name": {
+      "default": "cache"
+    },
+    "asg_count": {
+      "default": 2
+    },
+    "asg_name": {
+      "default": [
+        "blue",
+        "green"
+      ]
+    },
+    "az_count": {
+      "default": "4"
+    },
+    "display_name": {
+      "default": ""
+    },
+    "env_name": {
+      "default": "admin"
+    },
+    "image_id": {
+      "default": [
+        "",
+        ""
+      ]
+    },
+    "instance_type": {
+      "default": [
+        "t2.nano",
+        "t2.nano"
+      ]
+    },
+    "max_size": {
+      "default": [
+        "5",
+        "5"
+      ]
+    },
+    "min_size": {
+      "default": [
+        "0",
+        "0"
+      ]
+    },
+    "public_key": {
+      "default": "../../../etc/ssh-key-pair.pub"
+    },
+    "public_network": {
+      "default": "0"
+    },
+    "root_volume_size": {
+      "default": [
+        "20",
+        "20"
+      ]
+    },
+    "service_bits": {
+      "default": "12"
+    },
+    "service_name": {
+      "default": "dns"
+    },
+    "termination_policies": {
+      "default": [
+        "OldestInstance"
+      ]
+    },
+    "user_data": {
+      "default": "../../../etc/user-data.template"
+    },
+    "want_fs": {
+      "default": "0"
+    },
+    "want_nat": {
+      "default": "0"
+    }
+  }
+}
