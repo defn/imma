@@ -39,7 +39,14 @@
       "want_nat": "${var.want_nat}"
     }
   },
-  "output": {},
+  "output": {
+    "asg_names": {
+      "value": "${module.service.asg_names}"
+    },
+    "aws_region": {
+      "value": "${data.terraform_remote_state.env.aws_region}"
+    }
+  },
   "provider": {
     "aws": {
       "region": "${data.terraform_remote_state.env.aws_region}"
@@ -97,7 +104,7 @@
       ]
     },
     "public_key": {
-      "default": "etc/ssh-key-pair.pub"
+      "default": "../../../etc/ssh-key-pair.pub"
     },
     "public_network": {
       "default": "0"
@@ -120,7 +127,7 @@
       ]
     },
     "user_data": {
-      "default": "etc/user-data.template"
+      "default": "../../../etc/user-data.template"
     },
     "want_fs": {
       "default": "0"
