@@ -31,6 +31,9 @@
     "app_sg": {
       "value": "${module.app.app_sg}"
     },
+    "aws_region": {
+      "value": "${data.terraform_remote_state.global.env_region[var.env_name]}"
+    },
     "env_region": {
       "value": "${data.terraform_remote_state.global.env_region}"
     }
