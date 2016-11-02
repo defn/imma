@@ -74,11 +74,6 @@
     "env_name": {
       "default": "admin"
     },
-    "ignore_asg_changes": {
-      "default": [
-        ""
-      ]
-    },
     "image_id": {
       "default": [
         "",
@@ -133,7 +128,7 @@
       "default": "0"
     },
     "want_nat": {
-      "default": "1"
+      "default": "0"
     }
   }
 }
