@@ -28,7 +28,17 @@ function main {
 
   export FOGG_PREFIX="${pth_context//\//-}"
     
-  aws "$(cat .terraform/terraform.tfstate | jq -r '.modules[0].outputs.aws_region.value')" exec fogg "$@"
+  local nm_region="$(cat .terraform/terraform.tfstate 2>/dev/null | jq -r '.modules[0].outputs.aws_region.value//""')"
+  if [[ -z "$nm_region" ]]; then
+    nm_region="$(hcltool terraform.tfvars 2>/dev/null | jq -r '.aws_region')"
+  fi
+
+  if [[ -z "$nm_region" ]]; then
+    echo "ERROR: can't find region in parent tfstate or current tfvars" 1>&2
+    return 1
+  fi
+
+  aws "$nm_region" exec fogg "$@"
 }
 
 source sub-chain "$BASH_SOURCE" "$@"
