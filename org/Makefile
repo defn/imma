@@ -1,7 +1,7 @@
-refresh:
-	runmany 'cd $$1 && imma plan' imma
-	runmany 3 'cd imma/$$1 && imma plan' sandbox dev admin ireland network prod stage
+plan:
+	imma plan
+	runmany 3 'cd $$1 && if test -d .terraform; then imma plan; fi' */
 
 apply:
-	runmany 'cd $$1 && imma apply' imma
-	runmany 3 'cd imma/$$1 && imma apply' sandbox dev admin ireland network prod stage
+	imma apply
+	runmany 3 'cd $$1 && if test -d .terraform; then imma apply; fi' */
