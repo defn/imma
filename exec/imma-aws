@@ -5,10 +5,6 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  cd "$shome/org/${CONTEXT_ORG}"
-  mkdir -p .aq
-  export AQ_STATE="${PWD}/.aq"
-
   local nm_region="$(cat .terraform/terraform.tfstate 2>/dev/null | jq -r '.modules[0].outputs.aws_region.value//""')"
   if [[ -z "$nm_region" ]]; then
     nm_region="$(hcltool terraform.tfvars 2>/dev/null | jq -r '.aws_region')"
@@ -19,9 +15,12 @@ function main {
     return 1
   fi
 
-  export AQ_ACCOUNT_ID="$(cat .terraform/terraform.tfstate | jq -r '.modules[0].outputs.aws_account_id.value')"
+  export AQ_STATE="${PWD}/.aq"
+  mkdir -p "$AQ_STATE"
 
-  aws "$nm_region" exec aq "$@"
+  export AQ_ACCOUNT_ID="$(cat .terraform/terraform.tfstate | jq -r '.modules[1].resources["data.terraform_remote_state.global"].primary.attributes.aws_account_id')"
+
+  aws "$nm_region" exec aws "$@"
 }
 
 source sub-chain "$BASH_SOURCE" "$@"
