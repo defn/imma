@@ -1,6 +1,1 @@
-#!/usr/bin/env bash
-
-export CONTEXT_ORG="${0##*/}"
-[[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
-
-source sub-chain "imma" "$@"
+imma
