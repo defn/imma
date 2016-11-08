@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export CONTEXT_ORG="${PWD##*/org/}"
+export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
 [[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
 
 function main {
