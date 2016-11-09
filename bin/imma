@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
-export CONTEXT_ORG="${PWD##*/org/}"
-export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
-[[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
+function switch_role {
+  local nm_org_prefix="${CONTEXT_ORG//-/_}"
+
+  local a
+  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN; do
+    local b="${nm_org_prefix}_$a"
+    export "$a"="${!b}"
+  done
+}
 
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
@@ -41,5 +47,11 @@ function main {
 
   aws "$nm_region" exec fogg "$@"
 }
+
+export CONTEXT_ORG="${PWD##*/org/}"
+export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
+[[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
+
+switch_role
 
 source sub-chain imma "$@"
