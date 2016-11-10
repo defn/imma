@@ -5,4 +5,8 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
+function imma {
+  command imma "$@"
+}
+
 _imma_profile
