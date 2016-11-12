@@ -5,8 +5,30 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
+function switch_role {
+  local nm_org_prefix="$1"; shift
+
+  local a
+  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN; do
+    local b="${nm_org_prefix}_$a"
+    export "$a"="${!b}"
+  done
+}
+
 function imma {
-  command imma "$@"
+	case "${1:-}" in
+		switch)
+      shift
+      local nm_role="$1"; shift
+	    switch_role "$nm_role"
+      if [[ "$#" -gt 0 ]]; then
+        exec "$@"
+      fi
+      ;;
+    *)
+      command imma "$@"
+      ;;
+  esac
 }
 
 _imma_profile
