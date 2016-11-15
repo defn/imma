@@ -15,20 +15,51 @@ function switch_role {
   done
 }
 
-function imma {
+function _imma {
 	case "${1:-}" in
 		switch)
       shift
-      local nm_role="$1"; shift
-	    switch_role "$nm_role"
+      local nm_org
+
+      if [[ -n "${1:-}" ]]; then
+        nm_org="$1"; shift
+      else
+        nm_org="$CONTEXT_ORG"
+      fi
+
+      switch_role "$nm_org"
+
       if [[ "$#" -gt 0 ]]; then
         exec "$@"
       fi
       ;;
+    role)
+      shift
+      local nm_role
+
+      if [[ -n "${1:-}" ]]; then
+        nm_role="$1"; shift
+      else
+        nm_role="administrator"
+      fi
+
+      local nm_org="$CONTEXT_ORG"
+
+      eval $(command "${FUNCNAME[1]}" role "$nm_role")
+      switch_role "$nm_org"
+      ;;
     *)
-      command imma "$@"
+      command "${FUNCNAME[1]}" "$@"
       ;;
   esac
+}
+
+function immanent {
+  _imma "$@"
+}
+
+function imma {
+  _imma "$@"
 }
 
 _imma_profile

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+unset https_proxy
+
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
@@ -31,15 +33,23 @@ function main {
   fi
 
   if [[ -z "$nm_region" ]]; then
-    echo "ERROR: can't find region in parent tfstate or current tfvars" 1>&2
+    echo "ERROR: can't find region in parent tfstate or current tfvars: args $@" 1>&2
     return 1
   fi
 
   aws "$nm_region" exec fogg "$@"
 }
 
-export CONTEXT_ORG="${PWD##*/org/}"
-export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
+case "$PWD" in
+  */org/*)
+    export CONTEXT_ORG="${PWD##*/org/}"
+    export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
+    ;;
+  *)
+    export CONTEXT_ORG="${BASH_SOURCE##*/}"
+    ;;
+esac
+
 [[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
 
 _shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
