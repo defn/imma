@@ -1,10 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
-import sys
-import onetimepass as otp
+function paste_buffer {
+  cat | tee | if type -P pbcopy >/dev/null; then
+    pbcopy
+  else
+    cat
+  fi
+}
 
-my_secret = sys.stdin.readlines()[0].strip()
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize
 
-my_token = otp.get_totp(my_secret)
-sys.stdout.write('{0:06d}'.format(my_token))
+  gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
+    | paste_buffer
+}
 
+source sub "$BASH_SOURCE" "$@"

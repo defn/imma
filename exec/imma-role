@@ -7,7 +7,7 @@ function main {
 
   local nm_role="$1"; shift
 
-  local the_code="$(gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp))"
+  local the_code="$(imma totp)"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
