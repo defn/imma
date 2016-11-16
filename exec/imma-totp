@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 function paste_buffer {
-  cat | tee | if type -P pbcopy >/dev/null; then
-    pbcopy
+  cat | if type -P pbcopy >/dev/null; then
+    local a
+    read -n 6 a
+    cat <<< "$a"
+    echo -n "$a" | pbcopy
   else
     cat
   fi
@@ -13,7 +16,9 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
+  local nm_org="${1:-${CONTEXT_ORG}}"
+
+  gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${nm_org}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
     | paste_buffer
 }
 
