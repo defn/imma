@@ -33,7 +33,7 @@
       "public_key": "${var.public_key}",
       "public_network": "${var.public_network}",
       "service_name": "${var.service_name}",
-      "source": "../../../../../fogg/module/service",
+      "source": "../../../../../module/service",
       "user_data": "${var.user_data}",
       "want_fs": "${var.want_fs}",
       "want_nat": "${var.want_nat}"

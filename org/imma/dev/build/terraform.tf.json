@@ -21,10 +21,13 @@
       "az_count": "${var.az_count}",
       "env_remote_state": "${data.terraform_remote_state.env.config[\"path\"]}",
       "global_remote_state": "${data.terraform_remote_state.global.config[\"path\"]}",
-      "source": "../../../../fogg/module/app"
+      "source": "../../../../module/app"
     }
   },
   "output": {
+    "app_ami_id": {
+      "value": "${module.app.app_ami_id}"
+    },
     "app_name": {
       "value": "${module.app.app_name}"
     },
