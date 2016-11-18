@@ -32,12 +32,20 @@ function main {
     nm_region="$(hcltool terraform.tfvars 2>/dev/null | jq -r '.aws_region')"
   fi
 
-  if [[ -z "$nm_region" ]]; then
-    echo "ERROR: can't find region in parent tfstate or current tfvars: args $@" 1>&2
-    return 1
-  fi
+  if type -P "fogg-${1:-}" >/dev/null; then
+    if [[ -n "$nm_region" ]]; then
+      exec aws "$nm_region" exec fogg "$@"
+    else
+      exec fogg "$@"
+    fi
 
-  aws "$nm_region" exec fogg "$@"
+  else
+    if [[ -n "$nm_region" ]]; then
+      exec aws "$nm_region" exec "$@"
+    else
+      exec "$@"
+    fi
+  fi
 }
 
 case "$PWD" in
