@@ -9,7 +9,7 @@ function switch_role {
   local nm_org_prefix="$1"; shift
 
   local a
-  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN; do
+  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_DEFAULT_REGION; do
     local b="${nm_org_prefix}_$a"
     export "$a"="${!b}"
   done
@@ -24,7 +24,7 @@ function _imma {
       if [[ -n "${1:-}" ]]; then
         nm_org="$1"; shift
       else
-        nm_org="$CONTEXT_ORG"
+        nm_org="${FUNCNAME[1]}"
       fi
 
       switch_role "$nm_org"
@@ -43,7 +43,7 @@ function _imma {
         nm_role="administrator"
       fi
 
-      local nm_org="$CONTEXT_ORG"
+      local nm_org="${FUNCNAME[1]}"
 
       eval $(command "${FUNCNAME[1]}" role "$nm_role")
       switch_role "$nm_org"

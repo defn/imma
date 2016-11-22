@@ -20,6 +20,7 @@ function main {
   local nm_role="${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}"
   local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].RoleArn')"
   local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].SerialNumber')"
+  local nm_region="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].Region')"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
@@ -36,6 +37,12 @@ function main {
   export "${nm_org_prefix}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
   export "${nm_org_prefix}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   rm -f "$tmp_sts"
+
+  if [[ -n "$nm_region" ]]; then
+    export "${nm_org_prefix}_AWS_DEFAULT_REGION"="$nm_region"
+  else
+    unset "${nm_org_prefix}_AWS_DEFAULT_REGION"
+  fi
   
   unset AWS_PROFILE
 
