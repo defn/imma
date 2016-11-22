@@ -11,6 +11,9 @@
     "aws_account_id": {
       "value": "${module.global.aws_account_id}"
     },
+    "aws_region": {
+      "value": "${module.global.aws_region}"
+    },
     "domain_name": {
       "value": "${module.global.domain_name}"
     },

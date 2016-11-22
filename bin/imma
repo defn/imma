@@ -29,6 +29,9 @@ function main {
     
   local nm_region="$(cat .terraform/terraform.tfstate 2>/dev/null | jq -r '.modules[0].outputs.aws_region.value//""')"
   if [[ -z "$nm_region" ]]; then
+    nm_region="$(cat ../.terraform/terraform.tfstate 2>/dev/null | jq -r '.modules[0].outputs.aws_region.value//""')"
+  fi
+  if [[ -z "$nm_region" ]]; then
     nm_region="$(hcltool terraform.tfvars 2>/dev/null | jq -r '.aws_region')"
   fi
 
