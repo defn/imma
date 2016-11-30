@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-unset https_proxy
-
 function main {
-  local shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  local shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
   source "$shome/script/profile"
   source normalize
 
@@ -49,21 +47,16 @@ function main {
   fi
 }
 
-case "$PWD" in
-  */org/*)
-    export CONTEXT_ORG="${PWD##*/org/}"
-    export CONTEXT_ORG="${CONTEXT_ORG%%/*}"
-    ;;
-  *)
-    export CONTEXT_ORG="${BASH_SOURCE##*/}"
-    ;;
-esac
+if [[ -z "${CONTEXT_ORG:-}" ]]; then
+  export CONTEXT_ORG="${BASH_SOURCE##*/}"
+fi
 
 [[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
 
-_shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+_shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
 source "$_shome/script/profile"
 
+unset https_proxy
 switch_role "${CONTEXT_ORG//-/_}"
 
 source sub-chain imma "$@"
