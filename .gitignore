@@ -5,5 +5,4 @@ ssh-*
 /vendor/virtualenv
 terraform.tfstate.backup
 .aq
-/module
 *.log
