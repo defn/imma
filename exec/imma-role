@@ -5,12 +5,8 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  set -x
-
   local nm_role="$1"; shift
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
-
-  local the_code="$(imma totp)"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
@@ -28,7 +24,20 @@ function main {
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
   
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_DEFAULT_REGION
-  aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"
+
+  local the_code=
+  local last_code=
+  
+  while true; do
+    while [[ "$the_code" == "$last_code" ]]; do
+      the_code="$(imma totp)"
+      sleep 1
+    done
+    last_code="$the_code"
+    if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
+      break
+    fi
+  done
 
   unset AWS_SHARED_CREDENTIALS_FILE
   rm -f "$tmp_credentials"
