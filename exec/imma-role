@@ -42,21 +42,21 @@ function main {
   unset AWS_SHARED_CREDENTIALS_FILE
   rm -f "$tmp_credentials"
 
-  export "${nm_prefix}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
-  export "${nm_prefix}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
-  export "${nm_prefix}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+  export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
+  export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
+  export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   rm -f "$tmp_sts"
 
   if [[ -n "$nm_region" ]]; then
-    export "${nm_prefix}_AWS_DEFAULT_REGION"="$nm_region"
+    export "${CONTEXT_ORG}_AWS_DEFAULT_REGION"="$nm_region"
   else
-    unset "${nm_prefix}_AWS_DEFAULT_REGION"
+    unset "${CONTEXT_ORG}_AWS_DEFAULT_REGION"
   fi
   
   unset AWS_PROFILE
 
   if [[ "$#" == 0 ]]; then
-    set | egrep '^'"${nm_prefix}_" | sed 's#^#export #'
+    set | egrep '^'"${CONTEXT_ORG}_" | sed 's#^#export #'
   else
     exec "$@"
   fi
