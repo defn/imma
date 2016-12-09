@@ -5,16 +5,6 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
-function switch_role {
-  local nm_role="$1"; shift
-
-  local a
-  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_DEFAULT_REGION; do
-    local b="${CONTEXT_ORG}_${nm_role}_$a"
-    export "$a"="${!b}"
-  done
-}
-
 function _imma {
 	case "${1:-}" in
     assume)
@@ -28,7 +18,6 @@ function _imma {
       fi
 
       eval $(command imma role "$nm_role")
-      switch_role "$nm_role"
       ;;
     *)
       command "${FUNCNAME[1]}" "$@"

@@ -52,7 +52,4 @@ function main {
 _shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
 source "$_shome/script/profile"
 
-unset https_proxy
-switch_role "${CONTEXT_ORG}"
-
 source sub-chain imma "$@"

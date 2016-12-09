@@ -5,6 +5,8 @@ function main {
   source "$shome/script/profile"
   source normalize
 
+  set -x
+
   local nm_role="$1"; shift
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
