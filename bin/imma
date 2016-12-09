@@ -47,16 +47,12 @@ function main {
   fi
 }
 
-if [[ -z "${CONTEXT_ORG:-}" ]]; then
-  export CONTEXT_ORG="${BASH_SOURCE##*/}"
-fi
-
 [[ -z "${AWS_DEFAULT_REGION:-}" ]] && source aws-eu-west-1
 
 _shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
 source "$_shome/script/profile"
 
 unset https_proxy
-switch_role "${CONTEXT_ORG//-/_}"
+switch_role "${CONTEXT_ORG}"
 
 source sub-chain imma "$@"

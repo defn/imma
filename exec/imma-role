@@ -6,8 +6,9 @@ function main {
   source normalize
 
   local nm_role="$1"; shift
+  local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
-  local the_code="$(imma totp "$CONTEXT_ORG")"
+  local the_code="$(imma totp)"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
@@ -17,10 +18,9 @@ function main {
     export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
   fi
 
-  local nm_role="${CONTEXT_ORG}-${nm_role#${CONTEXT_ORG}-}"
-  local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].RoleArn')"
-  local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].SerialNumber')"
-  local nm_region="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_role" '.[$role].Region')"
+  local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].RoleArn')"
+  local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].SerialNumber')"
+  local nm_region="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].Region')"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
@@ -31,23 +31,21 @@ function main {
   unset AWS_SHARED_CREDENTIALS_FILE
   rm -f "$tmp_credentials"
 
-  local nm_org_prefix="${CONTEXT_ORG//-/_}"
-
-  export "${nm_org_prefix}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
-  export "${nm_org_prefix}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
-  export "${nm_org_prefix}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+  export "${nm_prefix}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
+  export "${nm_prefix}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
+  export "${nm_prefix}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   rm -f "$tmp_sts"
 
   if [[ -n "$nm_region" ]]; then
-    export "${nm_org_prefix}_AWS_DEFAULT_REGION"="$nm_region"
+    export "${nm_prefix}_AWS_DEFAULT_REGION"="$nm_region"
   else
-    unset "${nm_org_prefix}_AWS_DEFAULT_REGION"
+    unset "${nm_prefix}_AWS_DEFAULT_REGION"
   fi
   
   unset AWS_PROFILE
 
   if [[ "$#" == 0 ]]; then
-    set | egrep '^'"${nm_org_prefix}_" | sed 's#^#export #'
+    set | egrep '^'"${nm_prefix}_" | sed 's#^#export #'
   else
     exec "$@"
   fi

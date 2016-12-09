@@ -6,35 +6,19 @@ function _imma_profile {
 }
 
 function switch_role {
-  local nm_org_prefix="$1"; shift
+  local nm_role="$1"; shift
 
   local a
   for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_DEFAULT_REGION; do
-    local b="${nm_org_prefix}_$a"
+    local b="${CONTEXT_ORG}_${nm_role}_$a"
     export "$a"="${!b}"
   done
 }
 
 function _imma {
 	case "${1:-}" in
-		switch)
-      shift
-      local nm_org
-
-      if [[ -n "${1:-}" ]]; then
-        nm_org="$1"; shift
-      else
-        nm_org="${FUNCNAME[1]}"
-      fi
-
-      switch_role "$nm_org"
-
-      if [[ "$#" -gt 0 ]]; then
-        exec "$@"
-      fi
-      ;;
-    role)
-      shift
+    assume)
+      shift # 'assume'
       local nm_role
 
       if [[ -n "${1:-}" ]]; then
@@ -43,23 +27,13 @@ function _imma {
         nm_role="administrator"
       fi
 
-      local nm_org="${FUNCNAME[1]}"
-
-      eval $(command "${FUNCNAME[1]}" role "$nm_role")
-      switch_role "$nm_org"
+      eval $(command imma role "$nm_role")
+      switch_role "$nm_role"
       ;;
     *)
       command "${FUNCNAME[1]}" "$@"
       ;;
   esac
-}
-
-function immanent {
-  _imma "$@"
-}
-
-function imma {
-  _imma "$@"
 }
 
 _imma_profile
