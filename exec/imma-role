@@ -18,12 +18,11 @@ function main {
 
   local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].RoleArn')"
   local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].SerialNumber')"
-  local nm_region="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].Region')"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
   
-  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_DEFAULT_REGION
+  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION AWS_DEFAULT_REGION
 
   local the_code=
   local last_code=
@@ -45,14 +44,9 @@ function main {
   export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
   export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
   export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+  export "${CONTEXT_ORG}_AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
   rm -f "$tmp_sts"
 
-  if [[ -n "$nm_region" ]]; then
-    export "${CONTEXT_ORG}_AWS_DEFAULT_REGION"="$nm_region"
-  else
-    unset "${CONTEXT_ORG}_AWS_DEFAULT_REGION"
-  fi
-  
   unset AWS_PROFILE
 
   if [[ "$#" == 0 ]]; then
