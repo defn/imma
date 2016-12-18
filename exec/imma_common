@@ -1,12 +1,43 @@
 #!/usr/bin/env bash
 
-function _imma {
+function switch_credentials {
+  local a
+  for a in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION; do
+    local b="${CONTEXT_ORG}_$a"
+    export "$a"="${!b}"
+  done
+}
+
+function __imma {
 	case "${1:-}" in
     assume)
       shift # 'assume'
+
+      local nm_env="$1"; shift
       local nm_role="${1:-administrator}"; shift || true
       eval $(command imma role "$nm_role")
+      switch_credentials
       ;;
+
+    switch)
+      shift # 'switch'
+
+      local nm_env="$1"; shift
+
+      switch_credentials
+
+      if [[ -z "${AWS_SESSION_EXPIRATION:-}" ]]; then
+        "${FUNCNAME[1]}" assume "$nm_env"
+      fi
+
+      if [[ -n "${AWS_SESSION_EXPIRATION:-}" ]]; then
+        local time_left="$(( $(gdate -d "$AWS_SESSION_EXPIRATION" +%s) - $(date +%s) ))"
+        if [[ "$time_left" -lt 600 ]]; then
+          "${FUNCNAME[1]}" assume "$nm_env"
+        fi
+      fi
+      ;;
+
     *)
       command "${FUNCNAME[1]}" "$@"
       ;;

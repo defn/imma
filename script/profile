@@ -5,4 +5,12 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
+function _imma {
+  local shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  PATH="$shome/bin:$shome/exec:$PATH"
+  source imma_common
+
+  __imma "$@"
+}
+
 _imma_profile
