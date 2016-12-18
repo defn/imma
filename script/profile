@@ -5,17 +5,4 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
-function _imma {
-	case "${1:-}" in
-    assume)
-      shift # 'assume'
-      local nm_role="${1:-administrator}"; shift || true
-      eval $(command imma role "$nm_role")
-      ;;
-    *)
-      command "${FUNCNAME[1]}" "$@"
-      ;;
-  esac
-}
-
 _imma_profile
