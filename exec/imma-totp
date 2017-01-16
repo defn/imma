@@ -16,6 +16,10 @@ function main {
   source "$shome/script/profile"
   source normalize
 
+  if [[ "$#" -gt 0 ]]; then
+    export CONTEXT_ORG="$1"; shift
+  fi
+
   gpg -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
     | paste_buffer
 }
