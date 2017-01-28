@@ -16,8 +16,8 @@ function main {
     export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
   fi
 
-  local arn_role="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].RoleArn')"
-  local id_mfa="$(cat "$HOME/.assume-aws-role/config" | jq -r --arg role "$nm_prefix" '.[$role].SerialNumber')"
+  local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
+  local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
@@ -26,17 +26,22 @@ function main {
 
   local the_code=
   local last_code=
-  
-  while true; do
-    while [[ "$the_code" == "$last_code" ]]; do
-      the_code="$(imma totp)"
-      sleep 1
+
+  if [[ -n "${1:-}" ]]; then
+    the_code="$1"; shift
+    aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"
+  else
+    while true; do
+      while [[ "$the_code" == "$last_code" ]]; do
+        the_code="$(imma totp)"
+        sleep 1
+      done
+      last_code="$the_code"
+      if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
+        break
+      fi
     done
-    last_code="$the_code"
-    if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
-      break
-    fi
-  done
+  fi
 
   unset AWS_SHARED_CREDENTIALS_FILE
   rm -f "$tmp_credentials"

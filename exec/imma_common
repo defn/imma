@@ -13,27 +13,23 @@ function __imma {
     assume)
       shift # 'assume'
 
-      local nm_env="$1"; shift
-      local nm_role="${1:-administrator}"; shift || true
-      eval $(command imma role "$nm_role")
+      eval $(command imma role "$@")
       switch_credentials
       ;;
 
     switch)
       shift # 'switch'
 
-      local nm_env="$1"; shift
-
       switch_credentials
 
       if [[ -z "${AWS_SESSION_EXPIRATION:-}" ]]; then
-        "${FUNCNAME[1]}" assume "$nm_env"
+        "${FUNCNAME[1]}" assume "$@"
       fi
 
       if [[ -n "${AWS_SESSION_EXPIRATION:-}" ]]; then
         local time_left="$(( $(gdate -d "$AWS_SESSION_EXPIRATION" +%s) - $(date +%s) ))"
         if [[ "$time_left" -lt 600 ]]; then
-          "${FUNCNAME[1]}" assume "$nm_env"
+          "${FUNCNAME[1]}" assume "$@"
         fi
       fi
       ;;
