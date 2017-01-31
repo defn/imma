@@ -20,22 +20,26 @@ function __imma {
     switch)
       shift # 'switch'
 
+      if [[ "$#" == 0 ]]; then
+        set -- administrator
+      fi
+
       switch_credentials
 
       if [[ -z "${AWS_SESSION_EXPIRATION:-}" ]]; then
-        "${FUNCNAME[1]}" assume "$@"
+        __imma assume "$@"
       fi
 
       if [[ -n "${AWS_SESSION_EXPIRATION:-}" ]]; then
         local time_left="$(( $(gdate -d "$AWS_SESSION_EXPIRATION" +%s) - $(date +%s) ))"
         if [[ "$time_left" -lt 600 ]]; then
-          "${FUNCNAME[1]}" assume "$@"
+          __imma assume "$@"
         fi
       fi
       ;;
 
     *)
-      command "${FUNCNAME[1]}" "$@"
+      command imma "$@"
       ;;
   esac
 }
