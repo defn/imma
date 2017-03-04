@@ -8,16 +8,17 @@ function main {
   local nm_role="$1"; shift
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
+  local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
+  local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
+
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
 
-  if [[ -f "$HOME/.aws/credentials-${CONTEXT_ORG}.gpg" ]]; then
-    gpg -q --batch --yes --output "$tmp_credentials" --decrypt "$HOME/.aws/credentials-${CONTEXT_ORG}.gpg"
+  local pth_gpg="$HOME/.aws/credentials-${id_mfa##*/}.gpg"
+  if [[ -f "$pth_gpg" ]]; then
+    gpg -q --batch --yes --output "$tmp_credentials" --decrypt "$pth_gpg"
     export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
   fi
-
-  local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
-  local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
@@ -33,7 +34,7 @@ function main {
   else
     while true; do
       while [[ "$the_code" == "$last_code" ]]; do
-        the_code="$(imma totp)"
+        the_code="$(imma totp "${id_mfa##*/}")"
         sleep 1
       done
       last_code="$the_code"
