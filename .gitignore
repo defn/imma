@@ -1,7 +1,6 @@
 .terraform
 .aws
 ssh-*
-/bin/hcltool
 /vendor/virtualenv
 terraform.tfstate.backup
 .aq
