@@ -6,6 +6,9 @@ function main {
   source normalize
 
   local nm_role="$1"; shift
+  if [[ -n "${:-}" ]]; then
+    export CONTEXT_ORG="$1"; shift
+  fi
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
   local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
@@ -28,21 +31,16 @@ function main {
   local the_code=
   local last_code=
 
-  if [[ -n "${1:-}" ]]; then
-    the_code="$1"; shift
-    aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"
-  else
-    while true; do
-      while [[ "$the_code" == "$last_code" ]]; do
-        the_code="$(imma totp "${id_mfa##*/}")"
-        sleep 1
-      done
-      last_code="$the_code"
-      if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
-        break
-      fi
+  while true; do
+    while [[ "$the_code" == "$last_code" ]]; do
+      the_code="$(imma totp "${id_mfa##*/}")"
+      sleep 1
     done
-  fi
+    last_code="$the_code"
+    if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
+      break
+    fi
+  done
 
   unset AWS_SHARED_CREDENTIALS_FILE
   rm -f "$tmp_credentials"
@@ -51,12 +49,13 @@ function main {
   export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
   export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   export "${CONTEXT_ORG}_AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
+  export "CONTEXT_ORG=${CONTEXT_ORG}"
   rm -f "$tmp_sts"
 
   unset AWS_PROFILE
 
   if [[ "$#" == 0 ]]; then
-    set | egrep '^'"${CONTEXT_ORG}_" | sed 's#^#export #'
+    set | egrep '^'"${CONTEXT_ORG}" | sed 's#^#export #'
   else
     exec "$@"
   fi
