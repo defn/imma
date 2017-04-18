@@ -22,7 +22,7 @@ function main {
 
   local pth_gpg="$HOME/.aws/credentials-${id_mfa##*/}.gpg"
   if [[ -f "$pth_gpg" ]]; then
-    gpg -q --batch --yes --output "$tmp_credentials" --decrypt "$pth_gpg"
+    gpg2 -q --batch --yes --output "$tmp_credentials" --decrypt "$pth_gpg"
     export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
   fi
 
