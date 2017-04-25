@@ -18,7 +18,7 @@ function __imma {
       shift # 'assume'
       case "$#" in
         0)
-          echo "ERROR: syntax: context_org | role context_org region" 1>&2
+          echo "ERROR: syntax: context_org | context_org role region" 1>&2
           return 1
           ;;
         1)
@@ -29,6 +29,7 @@ function __imma {
           eval $(command imma role "$@")
           switch_credentials
           ;;
+      esac
       ;;
     *)
       command imma "$@"

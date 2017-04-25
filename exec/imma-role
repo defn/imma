@@ -5,13 +5,19 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  local nm_role="$1"; shift
   if [[ -n "${1:-}" ]]; then
     export CONTEXT_ORG="$1"; shift
   fi
+
+  if [[ -z "${1:-}" ]]; then
+    set -- administrator
+  fi
+  local nm_role="$1"; shift
+
   if [[ -n "${1:-}" ]]; then
     export AWS_DEFAULT_REGION="$1"; shift
   fi
+
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
   local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
@@ -30,6 +36,10 @@ function main {
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
   
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION
+  
+  if type -P "env-${CONTEXT_ORG}" >/dev/null; then
+    source "env-${CONTEXT_ORG}"
+  fi
 
   local the_code=
   local last_code=
