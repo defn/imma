@@ -6,38 +6,30 @@ function switch_credentials {
     local b="${CONTEXT_ORG}_$a"
     export "$a"="${!b}"
   done
+  
+  if type -P "env-${CONTEXT_ORG}" >/dev/null; then
+    source "env-${CONTEXT_ORG}"
+  fi
 }
 
 function __imma {
 	case "${1:-}" in
     assume)
       shift # 'assume'
-
-      eval $(command imma role "$@")
-      switch_credentials
+      case "$#" in
+        0)
+          echo "ERROR: syntax: context_org | role context_org region" 1>&2
+          return 1
+          ;;
+        1)
+          export CONTEXT_ORG="$1"; shift
+          switch_credentials
+          ;;
+        *)
+          eval $(command imma role "$@")
+          switch_credentials
+          ;;
       ;;
-
-    switch)
-      shift # 'switch'
-
-      if [[ "$#" == 0 ]]; then
-        set -- administrator
-      fi
-
-      switch_credentials
-
-      if [[ -z "${AWS_SESSION_EXPIRATION:-}" ]]; then
-        __imma assume "$@"
-      fi
-
-      if [[ -n "${AWS_SESSION_EXPIRATION:-}" ]]; then
-        local time_left="$(( $(gdate -d "$AWS_SESSION_EXPIRATION" +%s) - $(date +%s) ))"
-        if [[ "$time_left" -lt 600 ]]; then
-          __imma assume "$@"
-        fi
-      fi
-      ;;
-
     *)
       command imma "$@"
       ;;
