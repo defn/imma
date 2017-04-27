@@ -16,11 +16,12 @@ function main {
   source "$shome/script/profile"
   source normalize
 
+  local nm_key="${CONTEXT_ORG}"
   if [[ "$#" -gt 0 ]]; then
-    export CONTEXT_ORG="$1"; shift
+    nm_key="$1"; shift
   fi
 
-  gpg2 -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${CONTEXT_ORG}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
+  gpg2 -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${nm_key}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
     | paste_buffer
 }
 

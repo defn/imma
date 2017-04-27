@@ -6,7 +6,7 @@ function main {
   source normalize
 
   _imma assume "$@"
-  imma credentials config >/dev/null
+  imma credentials cache >/dev/null
 }
 
 source sub "$BASH_SOURCE" "$@"
