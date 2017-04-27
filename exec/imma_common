@@ -22,6 +22,7 @@ function __imma {
           return 1
           ;;
         *)
+          export CONTEXT_ORG="$1"; shift
           eval $(command imma role "$@")
           switch_credentials
           ;;
