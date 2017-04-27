@@ -5,10 +5,6 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  if [[ -n "${1:-}" ]]; then
-    export CONTEXT_ORG="$1"; shift
-  fi
-
   if [[ -z "${1:-}" ]]; then
     set -- administrator
   fi
