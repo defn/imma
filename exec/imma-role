@@ -18,6 +18,7 @@ function main {
 
   local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
   local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
+  local nm_region="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
@@ -63,8 +64,8 @@ function main {
   unset AWS_PROFILE
 
   set | egrep '^'"${CONTEXT_ORG}" | sed 's#^#export #'
-  echo export "CONTEXT_ORG=${CONTEXT_ORG}"
-  echo export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+  echo export CONTEXT_ORG="${CONTEXT_ORG}"
+  echo export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-$nm_region}"
 }
 
 source sub "$BASH_SOURCE" "$@"
