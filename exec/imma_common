@@ -18,15 +18,18 @@ function __imma {
       shift # 'assume'
       case "$#" in
         0)
-          echo "ERROR: syntax: context_org role region" 1>&2
-          return 1
+          if [[ -z "${CONTEXT_ORG:-}" ]]; then
+            echo "ERROR: syntax: context_org role region" 1>&2
+            return 1
+          fi
           ;;
-        *)
+        1)
           export CONTEXT_ORG="$1"; shift
-          eval $(command imma role "$@")
-          switch_credentials
           ;;
       esac
+
+      eval $(command imma role "$@")
+      switch_credentials
       ;;
     *)
       command imma "$@"
