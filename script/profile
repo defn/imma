@@ -13,4 +13,12 @@ function _imma {
   __imma "$@"
 }
 
+function assume {
+  local shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  PATH="$shome/bin:$shome/exec:$PATH"
+  source imma_common
+
+  __imma assume "$@"
+}
+
 _imma_profile
