@@ -4,7 +4,7 @@ function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
-  return 0
+  "$shome/vendor/virtualenv/bin/python" -c "import onetimepass" 2>/dev/null
 }
 
-source sub "$0" "$@"
+main "$@"
