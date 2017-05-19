@@ -2,9 +2,7 @@
   "require": [
     "normalize",
     "awesome",
-    "python",
-    "terraform",
-    "fogg"
+    "python"
   ]
 }
 
