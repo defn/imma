@@ -21,8 +21,14 @@ function main {
     nm_key="$1"; shift
   fi
 
-  gpg2 -q --batch --yes --decrypt --output - "$HOME/.aws/totp-${nm_key}.gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
-    | paste_buffer
+  local pth_gpg=
+  for pth_gpg in "$HOME/.aws/totp-${nm_key}.gpg" "/config/aws/totp-${nm_key}.gpg"; do
+    if [[ -f "$pth_gpg" ]]; then
+      gpg2 -q --batch --yes --decrypt --output - "$pth_gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
+        | paste_buffer
+      break
+    fi
+  done
 }
 
 source sub "$BASH_SOURCE" "$@"
