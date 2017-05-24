@@ -16,9 +16,15 @@ function main {
 
   local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
-  local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
-  local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
-  local nm_region="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
+  local pth_assume=
+  for pth_assume in "$HOME/.aws/assume" "/config/aws/assume"; do
+    if [[ -f "$pth_assume" ]]; then
+      local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
+      local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
+      local nm_region="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
+      break
+    fi
+  done
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
