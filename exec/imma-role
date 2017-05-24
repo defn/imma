@@ -19,9 +19,9 @@ function main {
   local pth_assume=
   for pth_assume in "$HOME/.aws/assume" "/config/aws/assume"; do
     if [[ -f "$pth_assume" ]]; then
-      local arn_role="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
-      local id_mfa="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
-      local nm_region="$(cat "$HOME/.aws/assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
+      local arn_role="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
+      local id_mfa="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
+      local nm_region="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
       break
     fi
   done
