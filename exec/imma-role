@@ -26,6 +26,11 @@ function main {
     fi
   done
 
+  if [[ -z "${id_mfa:-}" ]]; then
+    echo "ERROR: could not find the mfa device for $nm_prefix" 1>&2
+    return 1
+  fi
+
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
 
