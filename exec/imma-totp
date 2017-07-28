@@ -18,7 +18,8 @@ function main {
 
   local nm_key="$1"; shift
 
-  (vault read --format json totp/code/"${nm_key}" || { imma totp load "$nm_key" && vault read --format json totp/code/"${nm_key}"; })| jq -r '.data.code' | paste_buffer
+  vault read --format json totp/code/"${nm_key}" >/dev/null 2>&1 || imma totp load "$nm_key" || true
+  vault read --format json totp/code/"${nm_key}" | jq -r '.data.code' | paste_buffer
 }
 
 source sub "$BASH_SOURCE" "$@"
