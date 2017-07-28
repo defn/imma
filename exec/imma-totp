@@ -16,19 +16,9 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  local nm_key="${CONTEXT_ORG}"
-  if [[ "$#" -gt 0 ]]; then
-    nm_key="$1"; shift
-  fi
+  local nm_key="$1"; shift
 
-  local pth_gpg=
-  for pth_gpg in "$HOME/.aws/totp-${nm_key}.gpg" "/config/aws/totp-${nm_key}.gpg"; do
-    if [[ -f "$pth_gpg" ]]; then
-      gpg2 -q --batch --yes --decrypt --output - "$pth_gpg" | perl -pe 's{\s*$}{}' | (set +u; source "$shome/vendor/virtualenv/bin/activate"; imma totp code) \
-        | paste_buffer
-      break
-    fi
-  done
+  (vault read --format json totp/code/"${nm_key}" || { imma totp load "$nm_key" && vault read --format json totp/code/"${nm_key}"; })| jq -r '.data.code' | paste_buffer
 }
 
 source sub "$BASH_SOURCE" "$@"
