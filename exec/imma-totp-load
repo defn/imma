@@ -6,7 +6,9 @@ function main {
   source normalize
 
   local nm_key="$1"; shift
-  vault write "totp/keys/${nm_key}" url="otpauth://totp/imma:${nm_key}?secret=$(gpg2 --decrypt "${BOARD_PATH}/.aws/totp-${nm_key}.gpg")&issuer=imma"
+
+  vault write "totp/keys/${nm_key}" \
+    url="otpauth://totp/imma:${nm_key}?secret=$(gpg2 --decrypt "${BOARD_PATH}/.aws/totp-${nm_key}.gpg")&issuer=imma"
 }
 
 source sub "$BASH_SOURCE" "$@"

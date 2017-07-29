@@ -31,17 +31,17 @@ function main {
     return 1
   fi
 
+  local nm_key="${id_mfa##*/}"
+
   local tmp_credentials="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
 
-  local pth_gpg=
-  for pth_gpg in "$HOME/.aws/credentials-${id_mfa##*/}.gpg" "/config/aws/credentials-${id_mfa##*/}.gpg"; do
-    if [[ -f "$pth_gpg" ]]; then
-      gpg2 -q --batch --yes --output "$tmp_credentials" --decrypt "$pth_gpg"
-      export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
-      break
-    fi
-  done
+  vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
+  if [[ ! -s "$tmp_credentials" ]]; then
+    vault write "secret/${nm_key}/credentials" aws="$(gpg2 --decrypt "${BOARD_PATH}/.aws/credentials-${nm_key}.gpg")"
+    vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
+  fi
+  export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
 
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
@@ -57,7 +57,7 @@ function main {
 
   while true; do
     while [[ "$the_code" == "$last_code" ]]; do
-      the_code="$(imma totp "${id_mfa##*/}")"
+      the_code="$(imma totp "${nm_key}")"
       sleep 1
     done
     last_code="$the_code"
