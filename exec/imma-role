@@ -37,7 +37,6 @@ function main {
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
 
-  vault read --format json "secret/${nm_key}/credentials"
   vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
   if [[ ! -s "$tmp_credentials" ]]; then
     vault write "secret/${nm_key}/credentials" aws="$(gpg2 --decrypt "${BOARD_PATH}/.aws/credentials-${nm_key}.gpg")"
