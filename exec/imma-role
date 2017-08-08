@@ -34,8 +34,10 @@ function main {
   local nm_key="${id_mfa##*/}"
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
-  trap "$(printf 'rm -vf "%q" 1>&2' "$tmp_credentials")" EXIT
+  local tmp_sts="$(mktemp -t XXXXXX)"
+  trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
 
+  vault read --format json "secret/${nm_key}/credentials"
   vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
   if [[ ! -s "$tmp_credentials" ]]; then
     vault write "secret/${nm_key}/credentials" aws="$(gpg2 --decrypt "${BOARD_PATH}/.aws/credentials-${nm_key}.gpg")"
@@ -43,9 +45,6 @@ function main {
   fi
   export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
 
-  local tmp_sts="$(mktemp -t XXXXXX)"
-  trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
-  
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION
   
   if type -P "env-${CONTEXT_ORG}" >/dev/null; then
@@ -67,13 +66,11 @@ function main {
   done
 
   unset AWS_SHARED_CREDENTIALS_FILE
-  rm -f "$tmp_credentials"
 
   export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
   export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
   export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
   export "${CONTEXT_ORG}_AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
-  rm -f "$tmp_sts"
 
   unset AWS_PROFILE
 
