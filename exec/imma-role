@@ -35,7 +35,7 @@ function main {
 
   local tmp_credentials="$(mktemp -t XXXXXX)"
   local tmp_sts="$(mktemp -t XXXXXX)"
-  trap "$(printf 'rm -vf "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
+  trap "$(printf 'rm -f "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
 
   vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
   if [[ ! -s "$tmp_credentials" ]]; then
