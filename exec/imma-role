@@ -5,29 +5,39 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  if [[ -z "${1:-}" ]]; then
-    set -- administrator
-  fi
-  local nm_role="$1"; shift
+  local nm_role
 
-  if [[ -n "${1:-}" ]]; then
-    export AWS_DEFAULT_REGION="$1"; shift
-  fi
+  case "$#" in
+    1)
+      CONTEXT_ORG="$1"
+      nm_role="administrator"
+      shift
+      ;;
+    2)
+      CONTEXT_ORG="$1"; shift
+      nm_role="$1"; shift
+      ;;
+    *)
+      echo "ERROR: too many args: $*" 1>&2
+      return 1
+      ;;
+  esac
 
-  local nm_prefix="${CONTEXT_ORG}_${nm_role#${CONTEXT_ORG}-}"
 
   local pth_assume=
   for pth_assume in "$HOME/.aws/assume" "/config/aws/assume"; do
     if [[ -f "$pth_assume" ]]; then
-      local arn_role="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].role')"
-      local id_mfa="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].mfa')"
-      local nm_region="$(cat "$pth_assume" | jq -r --arg role "$nm_prefix" '.[$role].region')"
+      local id_mfa="$(cat "$pth_assume" | jq -r --arg org "$CONTEXT_ORG" '.[$org].mfa')"
+      local nm_region="$(cat "$pth_assume" | jq -r --arg org "$CONTEXT_ORG" '.[$org].region')"
+      local arn_role="$(cat "$pth_assume" | jq -r --arg org "$CONTEXT_ORG" --arg role "$nm_role" '.[$org][$role]//""')"
       break
     fi
   done
 
+  local arn_role="${arn_role:-"$(aws iam list-roles | jq -r --arg role "$nm_role" '.Roles | map(select(.RoleName == $role)) | map(.Arn)[]')"}"
+
   if [[ -z "${id_mfa:-}" ]]; then
-    echo "ERROR: could not find the mfa device for $nm_prefix" 1>&2
+    echo "ERROR: could not find the mfa device for $CONTEXT_ORG" 1>&2
     return 1
   fi
 
@@ -37,34 +47,33 @@ function main {
   local tmp_sts="$(mktemp -t XXXXXX)"
   trap "$(printf 'rm -f "%q" "%q" 1>&2' "$tmp_credentials" "$tmp_sts")" EXIT
 
-  vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
-  if [[ ! -s "$tmp_credentials" ]]; then
-    vault write "secret/${nm_key}/credentials" aws="$(gpg2 --decrypt "${BOARD_PATH}/.aws/credentials-${nm_key}.gpg")"
+  if [[ "${nm_role}" != "administrator" ]]; then
+    aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" > "$tmp_sts"
+  else
     vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
-  fi
-  export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
-
-  unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION
-  
-  if type -P "env-${CONTEXT_ORG}" >/dev/null; then
-    source "env-${CONTEXT_ORG}"
-  fi
-
-  local the_code=
-  local last_code=
-
-  while true; do
-    while [[ "$the_code" == "$last_code" ]]; do
-      the_code="$(imma totp "${nm_key}")"
-      sleep 1
-    done
-    last_code="$the_code"
-    if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
-      break
+    if [[ ! -s "$tmp_credentials" ]]; then
+      vault write "secret/${nm_key}/credentials" aws="$(gpg2 --decrypt "${BOARD_PATH}/.aws/credentials-${nm_key}.gpg")" >/dev/null
+      vault read --format json "secret/${nm_key}/credentials" | jq -r '.data.aws' > "$tmp_credentials"
     fi
-  done
+    export AWS_SHARED_CREDENTIALS_FILE="$tmp_credentials"
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION
+    
+    local the_code=
+    local last_code=
 
-  unset AWS_SHARED_CREDENTIALS_FILE
+    while true; do
+      while [[ "$the_code" == "$last_code" ]]; do
+        the_code="$(imma totp "${nm_key}")"
+        sleep 1
+      done
+      last_code="$the_code"
+      if aws sts assume-role --role-arn "$arn_role" --role-session-name "${CONTEXT_ORG}-$LOGNAME" --serial-number "$id_mfa" --token-code "$the_code" > "$tmp_sts"; then
+        break
+      fi
+    done
+
+    unset AWS_SHARED_CREDENTIALS_FILE
+  fi
 
   export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
   export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"

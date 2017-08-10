@@ -6,10 +6,6 @@ function switch_credentials {
     local b="${CONTEXT_ORG}_$a"
     export "$a"="${!b}"
   done
-  
-  if type -P "env-${CONTEXT_ORG}" >/dev/null; then
-    source "env-${CONTEXT_ORG}"
-  fi
 }
 
 function __imma {
@@ -19,12 +15,12 @@ function __imma {
       case "$#" in
         0)
           if [[ -z "${CONTEXT_ORG:-}" ]]; then
-            echo "ERROR: syntax: context_org role region" 1>&2
+            echo "ERROR: syntax: context_org role" 1>&2
             return 1
           fi
           ;;
         1)
-          export CONTEXT_ORG="$1"; shift
+          export CONTEXT_ORG="$1"
           ;;
       esac
 
