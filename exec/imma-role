@@ -9,8 +9,7 @@ function main {
 
   case "$#" in
     0)
-      echo "ERROR: no args" 1>&2
-      return 1
+      nm_role="administrator"
       ;;
     1)
       CONTEXT_ORG="$1"
