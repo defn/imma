@@ -8,18 +8,18 @@ function main {
   local nm_role
 
   case "$#" in
+    0)
+      echo "ERROR: no args" 1>&2
+      return 1
+      ;;
     1)
       CONTEXT_ORG="$1"
       nm_role="administrator"
       shift
       ;;
-    2)
+    *)
       CONTEXT_ORG="$1"; shift
       nm_role="$1"; shift
-      ;;
-    *)
-      echo "ERROR: too many args: $*" 1>&2
-      return 1
       ;;
   esac
 
@@ -75,16 +75,22 @@ function main {
     unset AWS_SHARED_CREDENTIALS_FILE
   fi
 
-  export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
-  export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
-  export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
-  export "${CONTEXT_ORG}_AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
+  if [[ "$#" -gt 0 ]]; then
+    export "AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
+    export "AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
+    export "AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+    export "AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
+    exec "$@"
+  else
+    export "${CONTEXT_ORG}_AWS_ACCESS_KEY_ID"="$(cat "$tmp_sts" | jq -r '.Credentials.AccessKeyId')"
+    export "${CONTEXT_ORG}_AWS_SECRET_ACCESS_KEY"="$(cat "$tmp_sts" | jq -r '.Credentials.SecretAccessKey')"
+    export "${CONTEXT_ORG}_AWS_SESSION_TOKEN"="$(cat "$tmp_sts" | jq -r '.Credentials.SessionToken')"
+    export "${CONTEXT_ORG}_AWS_SESSION_EXPIRATION"="$(cat "$tmp_sts" | jq -r '.Credentials.Expiration')"
 
-  unset AWS_PROFILE
-
-  set | egrep '^'"${CONTEXT_ORG}" | sed 's#^#export #'
-  echo export CONTEXT_ORG="${CONTEXT_ORG}"
-  echo export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-$nm_region}"
+    set | egrep '^'"${CONTEXT_ORG}" | sed 's#^#export #'
+    echo export CONTEXT_ORG="${CONTEXT_ORG}"
+    echo export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-$nm_region}"
+  fi
 }
 
 source sub "$BASH_SOURCE" "$@"
