@@ -6,7 +6,7 @@ function _imma_profile {
 }
 
 function _imma {
-  local shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  local shome="${_imma_home:="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
   PATH="$shome/bin:$shome/exec:$PATH"
   source imma_common
 
@@ -14,7 +14,7 @@ function _imma {
 }
 
 function assume {
-  local shome="${_imma_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  local shome="${_imma_home:="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
   PATH="$shome/bin:$shome/exec:$PATH"
   source imma_common
 
