@@ -18,7 +18,12 @@ function assume {
   PATH="$shome/bin:$shome/exec:$PATH"
   source imma_common
 
-  __imma assume "$@"
+  local nm_profile="$1"; shift
+  local nm_user="$1"; shift
+  if [[ "$#" == 0 ]]; then
+    set -- bash
+  fi
+  aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
 }
 
 _imma_profile
