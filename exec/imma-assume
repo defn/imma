@@ -6,16 +6,14 @@ function main {
   source normalize
 
   local nm_profile
-  local nm_user
 
   if [[ "$#" == 0 ]]; then
     nm_profile="${AWS_VAULT}"
-    nm_user="${AWS_MFA_USER}"
   else
     nm_profile="$1"; shift
-    nm_user="$1"; shift
-    export AWS_MFA_USER="$nm_user"
   fi
+
+  local nm_user="$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg vault "$nm_profile" '.[$vault].mfa | split("/")[-1]')"
 
   if [[ "$#" == 0 ]]; then
     set -- bash
