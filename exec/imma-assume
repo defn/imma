@@ -23,5 +23,7 @@ function main {
 
   export CONTEXT_ORG="$nm_profile"
 
-  aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
+  exec aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
 }
+
+source sub "$BASH_SOURCE" "$@"
