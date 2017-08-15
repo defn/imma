@@ -20,6 +20,7 @@ function main {
   fi
 
   export CONTEXT_ORG="$nm_profile"
+  export AWS_SESSION_EXPIRATION="$(date -d "1 hour" -u +"%Y-%m-%dT%H:%M:%SZ")"
 
   exec aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
 }
