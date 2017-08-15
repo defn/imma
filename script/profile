@@ -5,25 +5,4 @@ function _imma_profile {
   PATH="$shome/bin:$shome/exec:$PATH"
 }
 
-function _imma {
-  local shome="${_imma_home:="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
-  PATH="$shome/bin:$shome/exec:$PATH"
-  source imma_common
-
-  __imma "$@"
-}
-
-function assume {
-  local shome="${_imma_home:="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
-  PATH="$shome/bin:$shome/exec:$PATH"
-  source imma_common
-
-  local nm_profile="$1"; shift
-  local nm_user="$1"; shift
-  if [[ "$#" == 0 ]]; then
-    set -- bash
-  fi
-  aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
-}
-
 _imma_profile

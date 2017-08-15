@@ -5,8 +5,23 @@ function main {
   source "$shome/script/profile"
   source normalize
 
-  _imma assume "$@"
-  imma credentials cache >/dev/null
-}
+  local nm_profile
+  local nm_user
 
-source sub "$BASH_SOURCE" "$@"
+  if [[ "$#" == 0 ]]; then
+    nm_profile="${AWS_VAULT}"
+    nm_user="${AWS_MFA_USER}"
+  else
+    nm_profile="$1"; shift
+    nm_user="$1"; shift
+    export AWS_MFA_USER="$nm_user"
+  fi
+
+  if [[ "$#" == 0 ]]; then
+    set -- bash
+  fi
+
+  export CONTEXT_ORG="$nm_profile"
+
+  aws vault exec "$nm_profile" --assume-role-ttl=60m -m "$(imma totp "$nm_user")" -- "$@"
+}
