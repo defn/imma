@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize
+
+  local nm_profile
+
+  if [[ "$#" == 0 ]]; then
+    nm_profile="${AWS_VAULT}"
+  else
+    nm_profile="$1"; shift
+  fi
+
+  local nm_user="$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg vault "$nm_profile" '.[$vault].mfa | split("/")[-1]')"
+
+  aws vault login "$nm_profile" -t "$(imma totp "$nm_user")" -- "$@"
+}
+
+source sub "$BASH_SOURCE" "$@"
