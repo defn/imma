@@ -16,7 +16,7 @@ function main {
   local nm_user="$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg vault "$nm_profile" '.[$vault].mfa | split("/")[-1]')"
 
   if [[ "$#" == 0 ]]; then
-    set -- bash
+    set -- bash -l
   fi
 
   export CONTEXT_ORG="$nm_profile"
