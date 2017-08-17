@@ -18,8 +18,7 @@ function main {
 
   local nm_key="$1"; shift
 
-  vault read --format json totp/code/"${nm_key}" >/dev/null 2>&1 || imma totp load "$nm_key" || true
-  vault read --format json totp/code/"${nm_key}" | jq -r '.data.code' | paste_buffer
+  gpg2 --decrypt "${BOARD_PATH}/.aws/totp-${nm_key}.gpg" | paste_buffer
 }
 
 source sub "$BASH_SOURCE" "$@"
