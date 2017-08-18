@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
+function main {
+  fogg assume "${BASH_SOURCE##*/}" "$@"
+}
+
 source sub-chain imma "$@"
