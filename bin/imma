@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
 function main {
-  fogg assume "${BASH_SOURCE##*/}" "$@"
+  case "${1:-}" in
+    login)
+      shift
+      fogg login "${BASH_SOURCE##*/}" "$@"
+      ;;
+    *)
+      fogg assume "${BASH_SOURCE##*/}" "$@"
+      ;;
+  esac
 }
 
 source sub-chain imma "$@"
