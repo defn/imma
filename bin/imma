@@ -2,12 +2,12 @@
 
 function main {
   case "${1:-}" in
-    login|env)
+    login|assume)
       local nm_cmd="$1"; shift
       fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
     *)
-      fogg assume "${BASH_SOURCE##*/}" "$@"
+      fogg env "${BASH_SOURCE##*/}" "$@"
       ;;
   esac
 }
