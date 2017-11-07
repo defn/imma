@@ -5,3 +5,4 @@ ssh-*
 terraform.tfstate.backup
 .aq
 *.log
+Pipfile.lock
