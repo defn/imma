@@ -7,7 +7,11 @@ function main {
       fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
     *)
-      fogg env "${BASH_SOURCE##*/}" "$@"
+      if [[ "$#" == 0 ]]; then
+        fogg assume "${BASH_SOURCE##*/}" "$@"
+      else
+        fogg env "${BASH_SOURCE##*/}" "$@"
+      fi
       ;;
   esac
 }
