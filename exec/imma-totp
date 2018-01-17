@@ -18,7 +18,11 @@ function main {
 
   local nm_key="$1"; shift
 
-  op totp "$nm_key" | paste_buffer
+  if [[ -f "${BOARD_PATH}/.aws/${nm_key}.gpg" ]]; then
+    gpg2 -q --batch --yes --decrypt --output - "${BOARD_PATH}/.aws/${nm_key}.gpg" | perl -pe 's{\s*$}{}' | (cd "$shome" && pipenv run imma totp code) | paste_buffer
+  else
+    op totp "$nm_key" | paste_buffer
+  fi
 }
 
 source sub "$BASH_SOURCE" "$@"
