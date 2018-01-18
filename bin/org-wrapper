@@ -4,13 +4,13 @@ function main {
   case "${1:-}" in
     login|assume)
       local nm_cmd="$1"; shift
-      fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
+      exec fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
     *)
       if [[ "$#" == 0 ]]; then
-        fogg assume "${BASH_SOURCE##*/}" "$@"
+        exec fogg assume "${BASH_SOURCE##*/}" "$@"
       else
-        fogg env "${BASH_SOURCE##*/}" "$@"
+        exec fogg env "${BASH_SOURCE##*/}" "$@"
       fi
       ;;
   esac
