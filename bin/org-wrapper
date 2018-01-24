@@ -6,6 +6,10 @@ function main {
       local nm_cmd="$1"; shift
       exec fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
+    code)
+      shift # code
+      op assume "$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].op')" imma totp "$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].mfa')"
+      ;;
     *)
       if [[ "$#" == 0 ]]; then
         exec fogg assume "${BASH_SOURCE##*/}" "$@"
