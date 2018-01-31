@@ -12,9 +12,11 @@ ssh:
 	ssh-keyscan $(ssh_host) > .ssh/known_hosts
 	ssh -A -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(ssh_host) $(opt)
 
+init:
+	$(MAKE) ssh-config
+	tx init $(ssh_host) -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(opt)
+
 attach:
-	$(MAKE) config
-	tx init $(ssh_host)
 	tx $(ssh_host)
 
 ssh-config:
