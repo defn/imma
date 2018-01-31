@@ -1,3 +1,5 @@
+SHELL := bash
+
 all:
 	$(MAKE) up
 	$(MAKE) connect
