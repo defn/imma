@@ -3,8 +3,7 @@
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
 
-  cd "$shome"
-  make init
+  touch "$shome/.connected"
 }
 
 main "$@"

@@ -7,9 +7,11 @@ up:
 	rm -rf docker-for-mac.ovpn config
 	git checkout config
 	docker-compose up -d --force-recreate
+	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
 
 connect:
-	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
+	rm -f .connected
+	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done && make init &
 	block openvpn script/server default --script-security 2 --up "$(shell pwd)/script/up" --config "$(shell pwd)/docker-for-mac.ovpn"
 
 ssh_host := $(shell docker inspect service_latest_1 2>/dev/null | jq -r '.[0].NetworkSettings.Networks.service_default.IPAddress')
@@ -20,7 +22,7 @@ ssh:
 	ssh -A -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(ssh_host) $(opt)
 
 init:
-	$(MAKE) ssh opt=true
+	while ! $(MAKE) ssh opt=true; do sleep 1; done
 	tx init $(ssh_host) -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(opt)
 
 attach:
