@@ -1,4 +1,5 @@
 up:
+	$(MAKE) config
 	docker-compose up
 
 connect:
@@ -7,10 +8,16 @@ connect:
 ssh_host := $(shell docker inspect imma_latest_1 2>/dev/null | jq -r '.[0].NetworkSettings.Networks.imma_default.IPAddress') $(opt)
 
 ssh:
-	mkdir -p .ssh
+	$(MAKE) config
 	ssh-keyscan $(ssh_host) > .ssh/known_hosts
 	ssh -A -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(ssh_host) $(opt)
 
 attach:
+	$(MAKE) config
 	tx init $(ssh_host)
 	tx $(ssh_host)
+
+config:
+	mkdir -p .ssh
+	rsync -ia ~/.ssh/authorized_keys .ssh/
+
