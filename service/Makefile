@@ -22,7 +22,7 @@ ssh:
 	ssh -A -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(ssh_host) $(opt)
 
 init:
-	while ! $(MAKE) ssh opt="-o ConnectTimeout true"; do sleep 1; done
+	while ! $(MAKE) ssh opt="-o ConnectTimeout=1 true"; do sleep 1; done
 	tx init $(ssh_host) -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(opt)
 
 attach:
