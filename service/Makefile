@@ -1,6 +1,11 @@
+all:
+	$(MAKE) up
+	$(MAKE) connect
+
 up:
 	$(MAKE) ssh-config
-	rm -f docker-for-mac.ovpn
+	rm -rf docker-for-mac.ovpn config
+	git checkout config
 	docker-compose up -d --force-recreate
 
 connect:
