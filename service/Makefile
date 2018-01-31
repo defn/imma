@@ -4,7 +4,8 @@ all:
 
 up:
 	$(MAKE) ssh-config
-	rm -rf docker-for-mac.ovpn config
+	rm -f docker-for-mac.ovpn
+	sudo rm -rf config
 	git checkout config
 	docker-compose up -d --force-recreate
 	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
