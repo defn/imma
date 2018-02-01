@@ -1,6 +1,7 @@
 SHELL := bash
 
 all:
+	screen -X -S imma quit || true
 	screen -S imma -m $(MAKE) screen
 
 screen:
