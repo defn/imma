@@ -9,9 +9,8 @@ up:
 	rm -f docker-for-mac.ovpn
 	sudo rm -rf config
 	git checkout config
-	docker-compose stop
 	docker-compose build
-	docker-compose up -d
+	docker-compose up -d --force-recreate
 	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
 
 connect:
