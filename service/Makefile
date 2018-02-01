@@ -1,6 +1,9 @@
 SHELL := bash
 
 all:
+	screen -S imma -m $(MAKE) screen
+
+screen:
 	$(MAKE) up
 	$(MAKE) connect
 
