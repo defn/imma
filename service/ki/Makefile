@@ -18,14 +18,14 @@ all:
 	docker tag $(REPO):latest $(REPO):start
 
 base: .kitchen/docker_id_rsa
-	(cd && make prune || true)
+	$(MAKE) prune || true
 	mkdir -p .ssh
 	rsync -ia ~/.ssh/authorized_keys .ssh/
 	ln -nfs Dockerfile.base Dockerfile
 	docker build -t $(REPO):ubuntu .
 
 update:
-	(cd && make prune || true)
+	$(MAKE) prune || true
 	mkdir -p .ssh
 	rsync -ia ~/.ssh/authorized_keys .ssh/
 	ln -nfs Dockerfile.update Dockerfile
@@ -44,7 +44,7 @@ continue:
 finish:
 	docker commit $(PREFIX)_$(REPO)_latest_1 $(REPO):latest
 	env COMPOSE_PROJECT_NAME=$(PREFIX) docker-compose down || env COMPOSE_PROJECT_NAME=$(PREFIX) docker-compose down
-	(cd && make prune >/dev/null 2>&1 || true)
+	$(MAKE) prune || true
 
 dind:
 	$(MAKE) SSH_HOST=172.17.0.1
@@ -71,3 +71,8 @@ virtualbox:
 
 virtualbox-docker:
 	ki exec virtualbox-ubuntu -c 'ssh -A -o StrictHostKeyChecking=no ubuntu@localhost ki $(KI) docker-ubuntu'
+
+prune:
+	docker system prune -f
+	docker system prune -f --volumes
+	docker system df
