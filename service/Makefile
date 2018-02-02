@@ -1,6 +1,6 @@
 SHELL := bash
 
-all:
+restart:
 	screen -X -S imma quit || true
 	if [[ -f .pgroup ]]; then sudo pkill -g "$(shell cat .pgroup)" || true; sleep 5; sudo pkill -9 -g "$(shell cat .pgroup)" || true; fi
 	rm -f .pgroup
