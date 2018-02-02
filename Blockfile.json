@@ -1,7 +1,8 @@
 {
   "require": [
     "normalize",
-    "python"
+    "python",
+    "kitchen"
   ],
   "versions": {}
 }
