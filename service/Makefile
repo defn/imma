@@ -2,6 +2,7 @@ SHELL := bash
 
 all:
 	screen -X -S imma quit || true
+	sleep 2
 	screen -S imma -m $(MAKE) screen
 
 screen:
