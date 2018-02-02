@@ -3,6 +3,12 @@
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
 
+  echo '======================================================='
+  echo '=============== connected to docker vpn ==============='
+  echo '======================================================='
+
+  ps aux | grep [o]penvpn
+  
   touch "$shome/.connected"
 }
 
