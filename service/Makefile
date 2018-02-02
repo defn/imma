@@ -15,12 +15,12 @@ up:
 	$(MAKE) ssh-config
 	docker-compose build
 	docker-compose up -d --force-recreate
-	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
+	while [[ ! -e config/docker.ovpn ]]; do sleep 1; done
 
 connect:
 	rm -f .connected
-	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done && make init &
-	block openvpn script/server default --script-security 2 --up "$(shell pwd)/script/up" --config "$(shell pwd)/docker-for-mac.ovpn"
+	while [[ ! -e config/docker.ovpn ]]; do sleep 1; done && make init &
+	block openvpn script/server default --script-security 2 --up "$(shell pwd)/script/up" --config "$(shell pwd)/config/docker.ovpn"
 
 ssh_host := $(shell docker inspect service_latest_1 2>/dev/null | jq -r '.[0].NetworkSettings.Networks.service_default.IPAddress')
 

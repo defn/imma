@@ -16,7 +16,7 @@ services:
     cap_add:
       - NET_ADMIN
     environment:
-      dest: docker-for-mac.ovpn
+      dest: config/docker.ovpn
       DEBUG: '1'
     command: /local/helpers/run.sh
     restart: always
