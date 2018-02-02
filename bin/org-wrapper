@@ -2,7 +2,7 @@
 
 function main {
   case "${1:-}" in
-    login|assume)
+    login|assume|logout)
       local nm_cmd="$1"; shift
       exec fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
