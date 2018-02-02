@@ -2,18 +2,20 @@ SHELL := bash
 
 all:
 	screen -X -S imma quit || true
-	sleep 2
+	if [[ -f .pgroup ]]; then if sudo pkill -g "$(shell cat .pgroup)"; then sleep 5; if pgrep -g "$(shell cat .pgroup)"; then sudo pkill -9 -g "$(shell cat .pgroup)" || true; fi; fi; fi
+	rm -f .pgroup
 	screen -S imma -m $(MAKE) screen
 
 screen:
+	echo $$PPID > .pgroup
 	$(MAKE) up
 	$(MAKE) connect
 
 up:
 	$(MAKE) ssh-config
-	rm -f docker-for-mac.ovpn
-	sudo rm -rf config
-	git checkout config
+	#rm -f docker-for-mac.ovpn
+	#sudo rm -rf config
+	#git checkout config
 	docker-compose build
 	docker-compose up -d --force-recreate
 	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
