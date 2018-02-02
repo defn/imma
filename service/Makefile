@@ -2,7 +2,7 @@ SHELL := bash
 
 all:
 	screen -X -S imma quit || true
-	if [[ -f .pgroup ]]; then if sudo pkill -g "$(shell cat .pgroup)"; then sleep 5; if pgrep -g "$(shell cat .pgroup)"; then sudo pkill -9 -g "$(shell cat .pgroup)" || true; fi; fi; fi
+	if [[ -f .pgroup ]]; then if sudo pkill -g "$(shell cat .pgroup)"; then sleep 2; if pgrep -g "$(shell cat .pgroup)"; then sleep 3; sudo pkill -9 -g "$(shell cat .pgroup)" || true; fi; fi; fi
 	rm -f .pgroup
 	screen -S imma -m $(MAKE) screen
 
