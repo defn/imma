@@ -7,15 +7,12 @@ all:
 	screen -S imma -m $(MAKE) screen
 
 screen:
-	echo $$PPID > .pgroup
+	ps -o pgid "$(shell echo $$PPID)" | tail -1  > .pgroup
 	$(MAKE) up
 	$(MAKE) connect
 
 up:
 	$(MAKE) ssh-config
-	#rm -f docker-for-mac.ovpn
-	#sudo rm -rf config
-	#git checkout config
 	docker-compose build
 	docker-compose up -d --force-recreate
 	while [[ ! -e docker-for-mac.ovpn ]]; do sleep 1; done
