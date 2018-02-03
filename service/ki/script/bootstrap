@@ -19,9 +19,14 @@ function main {
 
   script/setup
   script/bootstrap || true
+
+  sudo rm -f ~root/.ssh/authorized_keys
+  (set +f; rm -f .ssh/authorized_keys .ssh/*id_rsa*)
   for a in {1..5}; do git clean -ffd || true; done
   rm -rf "$WRKOBJDIR"
   rm -rf "$PKGSRCDIR"
+
+  sudo find ~root/.ssh .ssh
   git status
 } 
 

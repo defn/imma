@@ -109,7 +109,10 @@ function main {
 
   git fetch
 	git reset --hard
+
 	for a in in {1..5}; do git clean -ffd || true; done
+  sudo rm -f ~root/.ssh/authorized_keys
+  (set +f; rm -f .ssh/authorized_keys .ssh/*id_rsa*)
 
 	script/setup
 	script/bootstrap
