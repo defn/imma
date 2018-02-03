@@ -1,4 +1,4 @@
-FROM imma:latest
+FROM imma/ubuntu
 
 RUN rm -rf /root/.ssh
 

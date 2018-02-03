@@ -1,7 +1,7 @@
 KI := conv
 DATA ?= /data
 SSH_HOST ?= 127.0.0.1
-REPO ?= imma
+REPO ?= imma/ubuntu
 TAG ?= latest
 PREFIX := fehfeh$(shell hostname | perl -pe 's{[\.-]}{}g')
 
