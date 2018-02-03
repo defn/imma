@@ -25,6 +25,7 @@ base: .kitchen/docker_id_rsa
 	docker build -t $(REPO):ubuntu .
 
 update:
+	$(MAKE) prep
 	$(MAKE) prune || true
 	mkdir -p .ssh
 	rsync -ia ~/.ssh/authorized_keys .ssh/
@@ -76,3 +77,6 @@ prune:
 	docker system prune -f
 	docker system prune -f --volumes
 	docker system df
+
+prep: .kitchen/docker_id_rsa
+	if ! docker inspect "$(REPO):start" > /dev/null; then docker tag $(REPO):latest $(REPO):start; fi

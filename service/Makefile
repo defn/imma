@@ -45,5 +45,5 @@ ssh-config:
 	mkdir -p .ssh
 	rsync -ia ~/.ssh/authorized_keys .ssh/
 
-update push pull prune:
+update push pull prune prep:
 	cd ki && $(MAKE) $@
