@@ -7,7 +7,7 @@ restart:
 	screen -S imma -m $(MAKE) screen
 
 screen:
-	ps -o pgid "$(shell echo $$PPID)" | tail -1  > .pgroup
+	ps -o pgid "$(shell echo $$PPID)" | tail -1  | awk '{print $1}' > .pgroup
 	$(MAKE) up
 	$(MAKE) connect
 
