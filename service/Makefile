@@ -34,7 +34,6 @@ init:
 	tx init $(ssh_host) -o StrictHostKeyChecking=yes -o UserKnownHostsFile=.ssh/known_hosts $(opt)
 	@echo '======================================================='
 	@echo '=============== one-time init finished   =============='
-	@echo '=============== to exit screen: ctrl-a d =============='
 	@echo '======================================================='
 
 attach:
