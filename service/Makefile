@@ -1,15 +1,15 @@
 SHELL := bash
 
 restart:
+	ps -o pgid "$(shell echo $$PPID)" | tail -1  | awk '{print $1}' > .pgroup
+	$(MAKE) up
+	$(MAKE) connect
+
+screen:
 	screen -X -S imma quit || true
 	if [[ -f .pgroup ]]; then sudo pkill -g "$(shell cat .pgroup)" || true; sleep 5; sudo pkill -9 -g "$(shell cat .pgroup)" || true; fi
 	rm -f .pgroup
 	screen -S imma -m $(MAKE) screen
-
-screen:
-	ps -o pgid "$(shell echo $$PPID)" | tail -1  | awk '{print $1}' > .pgroup
-	$(MAKE) up
-	$(MAKE) connect
 
 up:
 	$(MAKE) ssh-config

@@ -1,2 +1,2 @@
 FROM kylemanna/openvpn
-COPY . /local
+COPY helpers /local/helpers

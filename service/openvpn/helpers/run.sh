@@ -1,8 +1,12 @@
 #!/bin/sh
 
+set -x
+
 dest=${dest:-docker.ovpn}
 
-if [ ! -f "/local/$dest" ]; then
+
+if [ ! -f "/etc/openvpn/$dest" ]; then
+sleep 60
     echo "*** REGENERATING ALL CONFIGS ***"
     set -ex
     ovpn_genconfig -u tcp://localhost
@@ -12,7 +16,7 @@ if [ ! -f "/local/$dest" ]; then
     ovpn_getclient host | sed '
     	s|localhost 1194|localhost 13194|;
 	s|redirect-gateway.*|route 172.16.0.0 255.240.0.0|;
-    ' > "/local/$dest"
+    ' > "/etc/openvpn/$dest"
 fi
 
 # Workaround for https://github.com/wojas/docker-mac-network/issues/6
