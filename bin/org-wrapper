@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
 function closest_config {
-  local pth_config="${AWS_CONFIG_FILE:-}"
+  local pth_config="${AWS_CONFIG_FILE:-${BOARD_PATH}/.aws/config}"
   pushd ./$(git rev-parse --show-cdup) >/dev/null
   if [[ -f .aws/config ]]; then
     pth_config=$(pwd)/.aws/config
   fi
   popd >/dev/null
 
-  if [[ -f "${pth_config}" ]]; then
-    export AWS_CONFIG_FILE="${pth_config}"
-  fi
+  export AWS_CONFIG_FILE="${pth_config}"
 }
 
 function main {
@@ -23,7 +21,7 @@ function main {
       ;;
     code)
       shift # code
-      op assume "$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].op')" imma totp "$(cat "${BOARD_PATH}/.aws/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].mfa')"
+      op assume "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].op')" imma totp "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].mfa')"
       ;;
     *)
       if [[ "$#" == 0 ]]; then
