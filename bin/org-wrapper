@@ -15,7 +15,7 @@ function main {
   closest_config
 
   case "${1:-}" in
-    login|assume|logout)
+    login|assume|logout|env)
       local nm_cmd="$1"; shift
       exec fogg "$nm_cmd" "${BASH_SOURCE##*/}" "$@"
       ;;
@@ -24,11 +24,7 @@ function main {
       op assume "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].op')" imma totp "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].mfa')"
       ;;
     *)
-      if [[ "$#" == 0 ]]; then
-        exec fogg assume "${BASH_SOURCE##*/}" "$@"
-      else
-        exec fogg env "${BASH_SOURCE##*/}" "$@"
-      fi
+      exec fogg assume "${BASH_SOURCE##*/}" "$@"
       ;;
   esac
 }
