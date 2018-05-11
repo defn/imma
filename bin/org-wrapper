@@ -2,10 +2,12 @@
 
 function closest_config {
   local pth_config="${AWS_CONFIG_FILE:-${BOARD_PATH}/.aws/config}"
+  pushd "$(dirname "${BASH_SOURCE}")" >/dev/null
   pushd ./$(git rev-parse --show-cdup) >/dev/null
   if [[ -f .aws/config ]]; then
     pth_config=$(pwd)/.aws/config
   fi
+  popd >/dev/null
   popd >/dev/null
 
   export AWS_CONFIG_FILE="${pth_config}"
