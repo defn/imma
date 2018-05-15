@@ -23,7 +23,7 @@ function main {
       ;;
     code)
       shift # code
-      op assume "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].op')" imma totp "$(cat "${AWS_CONFIG_FILE%/config}/assume" | jq -r --arg org "${BASH_SOURCE##*/}" '.[$org].mfa')"
+      imma code "${AWS_CONFIG_FILE%/config}/assume" "${BASH_SOURCE##*/}"
       ;;
     *)
       exec fogg assume "${BASH_SOURCE##*/}" "$@"
